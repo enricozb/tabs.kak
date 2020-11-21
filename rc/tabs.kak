@@ -12,6 +12,13 @@ hook global ModeChange .*next-key[user.tabs].* %{
   echo -debug popped
 }
 
+define-command rename-buffer-prompt %{
+  prompt -init %sh{ basename $kak_bufname } rename: %{
+    rename-buffer %val{text}
+    refresh-buflist
+  }
+}
+
 define-command -hidden refresh-buflist %{
   set-option buffer modeline_buflist %sh{
     tabs=""
@@ -63,4 +70,13 @@ define-command tab-nav -params 1 %{
 }
 
 map global tabs h ": tab-nav prev<ret>" -docstring "prev ←"
+map global tabs [ ": tab-nav prev<ret>" -docstring "prev ←"
+map global tabs <left> ": tab-nav prev<ret>" -docstring "prev ←"
 map global tabs l ": tab-nav next<ret>" -docstring "next →"
+map global tabs ] ": tab-nav next<ret>" -docstring "next →"
+map global tabs <right> ": tab-nav next<ret>" -docstring "next →"
+
+map global tabs r ": rename-buffer-prompt<ret>" -docstring "delete"
+
+map global tabs d ": delete-buffer<ret>" -docstring "delete"
+map global tabs u ": buffer *debug*<ret>" -docstring "debug"
