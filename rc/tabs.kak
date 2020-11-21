@@ -22,9 +22,9 @@ define-command -hidden refresh-buflist %{
       fi
 
       if [[ $buf == $kak_bufname ]]; then
-        tabs+="│{MenuBackground} $(basename "$buf") {Default}"
+        tabs+="│{Prompt} $(basename "$buf") {Default}"
       else
-        tabs+="│ $(basename "$buf") "
+        tabs+="│{LineNumbers} $(basename "$buf") {Default}"
       fi
     done
     echo "$tabs│"
@@ -62,5 +62,5 @@ define-command tab-nav -params 1 %{
   refresh-buflist
 }
 
-map global tabs ] ": tab-nav next<ret>" -docstring "next →"
-map global tabs [ ": tab-nav prev<ret>" -docstring "prev ←"
+map global tabs h ": tab-nav prev<ret>" -docstring "prev ←"
+map global tabs l ": tab-nav next<ret>" -docstring "next →"
