@@ -1,3 +1,3 @@
-# buffers.kak
+# tabs.kak
 
-View open buffers in status line, navigate between them quickly.
+View open buffers in status line, like tabs, and navigate between them quickly.
