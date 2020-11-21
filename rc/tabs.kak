@@ -17,7 +17,11 @@ define-command -hidden refresh-buflist %{
     tabs=""
     declare -a "buffers=($kak_quoted_buflist)"
     for buf in "${buffers[@]}"; do
-      if [[ $buf = $kak_bufname ]]; then
+      if [[ $buf == "*debug*" && $kak_bufname != "*debug*" ]]; then
+        continue
+      fi
+
+      if [[ $buf == $kak_bufname ]]; then
         tabs+="│{MenuBackground} $(basename "$buf") {Default}"
       else
         tabs+="│ $(basename "$buf") "
@@ -37,7 +41,11 @@ define-command tab-nav -params 1 %{
         break
       fi
 
-      if [[ "$buf" == "$kak_bufname" ]]; then
+      if [[ $buf == "*debug*" && $kak_bufname != "*debug*" ]]; then
+        continue
+      fi
+
+      if [[ $buf == $kak_bufname ]]; then
         done=true
         prev=$last
       fi
@@ -56,4 +64,3 @@ define-command tab-nav -params 1 %{
 
 map global tabs ] ": tab-nav next<ret>" -docstring "next →"
 map global tabs [ ": tab-nav prev<ret>" -docstring "prev ←"
-map global tabs l ": enter-user-mode -lock tabs<ret>" -docstring "lock"
