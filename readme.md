@@ -4,7 +4,7 @@ View open buffers in status line, like tabs, and navigate between them quickly.
 
 Inspired by [Delapouite's `kakoune-buffers`][1].
 
-[![asciicast](https://asciinema.org/a/3aOtqAw7BiNQdPhAzlpHd8J2n.svg)][2]
+[![asciicast](https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6.svg)][2]
 
 ## Installation & Configurationn
 The suggested configuration is with [plug.kak][3]:
@@ -33,7 +33,7 @@ to decrease the overall size of the status line.
 
 
 [1]: https://github.com/Delapouite/kakoune-buffers/
-[2]: https://asciinema.org/a/3aOtqAw7BiNQdPhAzlpHd8J2n
+[2]: https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6
 [3]: https://github.com/robertmeta/plug.kak
 [4]: screenshot1.png
 [5]: screenshot2.png
