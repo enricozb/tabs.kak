@@ -2,13 +2,12 @@
 
 View open buffers in status line, like tabs, and navigate between them quickly.
 
-![tabs.kak screenshot][1]
-![tabs.kak screenshot][2]
+Inspired by [Delapouite's `kakoune-buffers`][1].
 
-Inspired by [Delapouite's `kakoune-buffers`][3].
+[![asciicast](https://asciinema.org/a/3aOtqAw7BiNQdPhAzlpHd8J2n.svg)][2]
 
 ## Installation & Configurationn
-The suggested configuration is with [plug.kak][4]:
+The suggested configuration is with [plug.kak][3]:
 ```
 plug "enricozb/tabs.kak" %{
   set-option global modelinefmt_tabs '%val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}}'
@@ -28,8 +27,13 @@ buffer manipulation. The `modelinefmt_tabs` is the `modelinefmt` that comes befo
 tabs in the statusline. It slightly modifies the default to remove the buffer name and
 to decrease the overall size of the status line.
 
+## Screenshots
+![tabs.kak screenshot][4]
+![tabs.kak screenshot][5]
 
-[1]: screenshot1.png
-[2]: screenshot2.png
-[3]: https://github.com/Delapouite/kakoune-buffers/
-[4]: https://github.com/robertmeta/plug.kak
+
+[1]: https://github.com/Delapouite/kakoune-buffers/
+[2]: https://asciinema.org/a/3aOtqAw7BiNQdPhAzlpHd8J2n
+[3]: https://github.com/robertmeta/plug.kak
+[4]: screenshot1.png
+[5]: screenshot2.png
