@@ -27,6 +27,20 @@ buffer manipulation. The `modelinefmt_tabs` is the `modelinefmt` that comes befo
 tabs in the statusline. It slightly modifies the default to remove the buffer name and
 to decrease the overall size of the status line.
 
+## Usage
+The current keybindings for navigation are (after entering `tabs` user mode):
+
+- **Moving between buffers**
+  - **h** move to the buffer on the left
+  - **l** move to the buffer on the right
+  - **u** navigate to the debug buffer
+- **Arranging buffers**
+  - **H** drag this buffer to the left
+  - **L** drag this buffer to the right
+- **Misc**
+  - **r** rename this buffer
+  - **d** delete this buffer
+
 ## Screenshots
 ![tabs.kak screenshot][4]
 ![tabs.kak screenshot][5]

@@ -121,10 +121,10 @@ define-command tab-move -params 1 %{
 map global tabs h ": tab-nav prev<ret>" -docstring "prev ←"
 map global tabs l ": tab-nav next<ret>" -docstring "next →"
 
-map global tabs H ": tab-move prev<ret>" -docstring "move ←"
-map global tabs L ": tab-move next<ret>" -docstring "move →"
+map global tabs H ": tab-move prev<ret>" -docstring "rearrange ←"
+map global tabs L ": tab-move next<ret>" -docstring "rearrange →"
 
-map global tabs r ": rename-buffer-prompt<ret>" -docstring "delete"
+map global tabs r ": rename-buffer-prompt<ret>" -docstring "rename"
 
 map global tabs d ": delete-buffer<ret>" -docstring "delete"
 map global tabs u ": buffer *debug*<ret>" -docstring "debug"
