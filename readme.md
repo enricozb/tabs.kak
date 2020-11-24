@@ -45,6 +45,8 @@ The current keybindings for navigation are (after entering `tabs` user mode):
 ![tabs.kak screenshot][4]
 ![tabs.kak screenshot][5]
 
+## To Do
+See [todo.md](todo.md) for bugs and upcoming features.
 
 [1]: https://github.com/Delapouite/kakoune-buffers/
 [2]: https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6
