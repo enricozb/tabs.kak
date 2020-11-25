@@ -8,10 +8,6 @@ hook global WinDisplay .* %{
   evaluate-commands refresh-buflist
 }
 
-hook global ModeChange .*next-key[user.tabs].* %{
-  echo -debug popped
-}
-
 define-command rename-buffer-prompt %{
   prompt -init %sh{ basename $kak_bufname } rename: %{
     rename-buffer %val{text}
