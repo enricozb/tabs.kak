@@ -6,7 +6,7 @@ Inspired by [Delapouite's `kakoune-buffers`][1].
 
 [![asciicast](https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6.svg)][2]
 
-## Installation & Configurationn
+## Installation & Configuration
 The suggested configuration is with [plug.kak][3]:
 ```
 plug "enricozb/tabs.kak" %{
@@ -26,6 +26,16 @@ This effectively remaps the functionality of the `b` key to `q`, and frees up `b
 buffer manipulation. The `modelinefmt_tabs` is the `modelinefmt` that comes before the
 tabs in the statusline. It slightly modifies the default to remove the buffer name and
 to decrease the overall size of the status line.
+
+### Custom Separator
+It's also recommended to override the default tab separator `|` with the full height
+vertical bar `│`. **Please be aware that there have been reports of the full height
+vertical bar not rendering properly on the status-line macOS**. This can be done with
+```
+set-option global tab_separator `│`
+```
+inside of the config section of `plug enricozb/tabs.kak %{ ... }` above.
+
 
 ## Usage
 The current keybindings for navigation are (after entering `tabs` user mode):
