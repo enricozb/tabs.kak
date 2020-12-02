@@ -3,6 +3,8 @@ declare-user-mode tabs
 declare-option str modelinefmt_tabs %opt{modelinefmt}
 declare-option str modeline_buflist
 declare-option str switch_to_tab
+declare-option str tab_separator
+set-option global tab_separator "|"
 
 hook global WinDisplay .* %{
   evaluate-commands refresh-buflist
@@ -25,12 +27,12 @@ define-command -hidden refresh-buflist %{
       fi
 
       if [[ $buf == $kak_bufname ]]; then
-        tabs+="│{Prompt} $(basename "$buf") {Default}"
+        tabs+="$kak_opt_tab_separator{Prompt} $(basename "$buf") {Default}"
       else
-        tabs+="│{LineNumbers} $(basename "$buf") {Default}"
+        tabs+="$kak_opt_tab_separator{LineNumbers} $(basename "$buf") {Default}"
       fi
     done
-    echo "$tabs│"
+    echo "$tabs$kak_opt_tab_separator"
   }
   set-option buffer modelinefmt "%opt{modelinefmt_tabs} - %opt{modeline_buflist}"
 }
