@@ -11,7 +11,7 @@ hook global WinDisplay .* %{
 }
 
 define-command rename-buffer-prompt %{
-  prompt -init %sh{ basename $kak_bufname } rename: %{
+  prompt -init %sh{ basename "$kak_bufname" } rename: %{
     rename-buffer %val{text}
     refresh-buflist
   }
@@ -20,16 +20,17 @@ define-command rename-buffer-prompt %{
 define-command -hidden refresh-buflist %{
   set-option buffer modeline_buflist %sh{
     tabs=""
-    declare -a "buffers=($kak_quoted_buflist)"
-    for buf in "${buffers[@]}"; do
-      if [[ $buf == "*debug*" && $kak_bufname != "*debug*" ]]; then
+
+    eval "set -- $kak_quoted_buflist"
+    for buf; do
+      if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
         continue
       fi
 
-      if [[ $buf == $kak_bufname ]]; then
-        tabs+="$kak_opt_tab_separator{Prompt} $(basename "$buf") {Default}"
+      if [ "$buf" = "$kak_bufname" ]; then
+        tabs="$tabs$kak_opt_tab_separator{Prompt} $(basename "$buf") {Default}"
       else
-        tabs+="$kak_opt_tab_separator{LineNumbers} $(basename "$buf") {Default}"
+        tabs="$tabs$kak_opt_tab_separator{LineNumbers} $(basename "$buf") {Default}"
       fi
     done
     echo "$tabs$kak_opt_tab_separator"
@@ -39,28 +40,30 @@ define-command -hidden refresh-buflist %{
 
 define-command tab-nav -params 1 %{
   execute-keys %sh{
-    declare -a "buffers=($kak_quoted_buflist)"
+    direction="$1"
     done=false
-    for buf in "${buffers[@]}"; do
+
+    eval "set -- $kak_quoted_buflist"
+    for buf; do
       if $done; then
         break
       fi
 
-      if [[ $buf == "*debug*" && $kak_bufname != "*debug*" ]]; then
+      if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
         continue
       fi
 
-      if [[ $buf == $kak_bufname ]]; then
+      if [ "$buf" = "$kak_bufname" ]; then
         done=true
-        prev=$last
+        prev="$last"
       fi
-      last=$buf
+      last="$buf"
     done
-    next=$buf
+    next="$buf"
 
-    if [[ $1 == "prev" && -n $prev ]]; then
+    if [ "$direction" = "prev" ] && [ -n "$prev" ]; then
       echo ": buffer $prev<ret>"
-    elif [[ $1 == "next" && -n $next ]]; then
+    elif [ "$direction" = "next" ] && [ -n "$next" ]; then
       echo ": buffer $next<ret>"
     fi
   }
@@ -69,47 +72,49 @@ define-command tab-nav -params 1 %{
 
 define-command tab-move -params 1 %{
   execute-keys %sh{
-    declare -a "buffers=($kak_quoted_buflist)"
+    direction="$1"
     done=false
-    for buf in "${buffers[@]}"; do
+
+    eval "set -- $kak_quoted_buflist"
+    for buf; do
       if $done; then
         break
       fi
 
-      if [[ $buf == "*debug*" && $kak_bufname != "*debug*" ]]; then
+      if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
         continue
       fi
 
-      if [[ $buf == $kak_bufname ]]; then
+      if [ "$buf" = "$kak_bufname" ]; then
         done=true
-        prev=$last
+        prev="$last"
       fi
-      last=$buf
+      last="$buf"
     done
-    next=$buf
-    curr=$kak_bufname
+    next="$buf"
+    curr="$kak_bufname"
 
     # prev, curr, and next are now set properly.
     # prev/next will be empty if curr is at the front /back of the buflist
-    if [[ $1 == "prev" && -n $prev ]]; then
-      swap=$prev
-    elif [[ $1 == "next" && -n $next ]]; then
-      swap=$next
+    if [ "$direction" = "prev" ] && [ -n "$prev" ]; then
+      swap="$prev"
+    elif [ "$direction" = "next" ] && [ -n "$next" ]; then
+      swap="$next"
     else
       exit
     fi
 
     bufs_to_arrange=""
-    for buf in "${buffers[@]}"; do
-      if [[ $buf == $swap ]]; then
-        buf=$curr
-      elif [[ $buf == $curr ]]; then
-        buf=$swap
+    for buf; do
+      if [ "$buf" = "$swap" ]; then
+        buf="$curr"
+      elif [ "$buf" = "$curr" ]; then
+        buf="$swap"
       fi
-      bufs_to_arrange+="'$buf' "
+      bufs_to_arrange="$bufs_to_arrange'$buf' "
     done
 
-    if [[ -n $bufs_to_arrange ]]; then
+    if [ -n "$bufs_to_arrange" ]; then
       echo ": arrange-buffers $bufs_to_arrange<ret>"
     fi
   }
