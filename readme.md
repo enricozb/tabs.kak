@@ -41,15 +41,23 @@ inside of the config section of `plug enricozb/tabs.kak %{ ... }` above.
 The current keybindings for navigation are (after entering `tabs` user mode):
 
 - **Moving between buffers**
+  - **a** alternate with the previously focused buffer
   - **h** move to the buffer on the left
   - **l** move to the buffer on the right
+  - **f** find a buffer by name
+  - **c** edit `kakrc`
+  - **s** navigate to the scratch buffer
   - **u** navigate to the debug buffer
+- **Deleting buffers**
+  - **d** delete current buffer
+  - **D** delete all saved buffers
+  - **o** delete all saved buffers except the current one
+  - **O** delete all buffers except the current one
 - **Arranging buffers**
   - **H** drag this buffer to the left
   - **L** drag this buffer to the right
 - **Misc**
   - **r** rename this buffer
-  - **d** delete this buffer
 
 ## Screenshots
 ![tabs.kak screenshot][4]
