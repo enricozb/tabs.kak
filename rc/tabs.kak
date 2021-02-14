@@ -6,10 +6,6 @@ declare-option str switch_to_tab
 declare-option str tab_separator
 set-option global tab_separator "|"
 
-hook global WinDisplay .* %{
-  evaluate-commands refresh-buflist
-}
-
 define-command rename-buffer-prompt %{
   prompt -init %sh{ basename "$kak_bufname" } rename: %{
     rename-buffer %val{text}
@@ -167,6 +163,17 @@ define-command delete-all-except-current -docstring "delete all buffers except c
 
   refresh-buflist
 }
+
+hook global WinCreate .* %{
+  hook window WinDisplay .* %{
+    evaluate-commands refresh-buflist
+  }
+
+  hook window NormalIdle .* %{
+    evaluate-commands refresh-buflist
+  }
+}
+
 
 # navigation
 map global tabs a "ga" -docstring "alt ↔"

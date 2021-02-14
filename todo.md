@@ -2,7 +2,6 @@
 
 ## Bugs
 - debug buffer ordering
-- calling `delete-buffer` on a non-current buffer won't update the buflist.
 - If too many buffers are open, you can't see where you're navigating.
 
 ## Features
