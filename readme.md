@@ -4,7 +4,7 @@ View open buffers in status line, like tabs, and navigate between them quickly.
 
 Inspired by [Delapouite's `kakoune-buffers`][1].
 
-[![asciicast](https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6.svg)][2]
+[![asciicast](https://asciinema.org/a/JuHNPO8i7nkOmCBQOCfZ8UEOf.svg)][2]
 
 ## Installation & Configuration
 The suggested configuration is with [plug.kak][3]:
@@ -45,29 +45,29 @@ The current keybindings for navigation are (after entering `tabs` user mode):
   - **h** move to the buffer on the left
   - **l** move to the buffer on the right
   - **f** find a buffer by name
+- **Arranging buffers**
+  - **H** drag this buffer to the left
+  - **L** drag this buffer to the right
+- **Common buffers**
   - **c** edit `kakrc`
   - **s** navigate to the scratch buffer
   - **u** navigate to the debug buffer
+- **Modification**
+  - **r** rename this buffer
 - **Deleting buffers**
   - **d** delete current buffer
   - **D** delete all saved buffers
   - **o** delete all saved buffers except the current one
   - **O** delete all buffers except the current one
-- **Arranging buffers**
-  - **H** drag this buffer to the left
-  - **L** drag this buffer to the right
-- **Misc**
-  - **r** rename this buffer
 
 ## Screenshots
 ![tabs.kak screenshot][4]
-![tabs.kak screenshot][5]
 
 ## To Do
-See [todo.md](todo.md) for bugs and upcoming features.
+See [todo.md][5] for bugs and upcoming features.
 
 [1]: https://github.com/Delapouite/kakoune-buffers/
-[2]: https://asciinema.org/a/6JrXsCORHqIq3ZW1F9BFC7uc6
+[2]: https://asciinema.org/a/JuHNPO8i7nkOmCBQOCfZ8UEOf
 [3]: https://github.com/robertmeta/plug.kak
 [4]: screenshot1.png
-[5]: screenshot2.png
+[5]: todo.md

@@ -176,21 +176,25 @@ hook global WinCreate .* %{
 
 
 # navigation
-map global tabs a "ga" -docstring "alt ↔"
-map global tabs h ": tab-nav prev<ret>" -docstring "prev ←"
-map global tabs l ": tab-nav next<ret>" -docstring "next →"
+map global tabs a "ga" -docstring "↔ alt"
+map global tabs h ": tab-nav prev<ret>" -docstring "← prev"
+map global tabs l ": tab-nav next<ret>" -docstring "→ next"
 map global tabs f ": buffer " -docstring "find"
-map global tabs c ": edit %val{config}/kakrc<ret>" -docstring "config"
+
+# rearrangement
+map global tabs H ": tab-move prev<ret>" -docstring "← drag left"
+map global tabs L ": tab-move next<ret>" -docstring "→ drag right"
+
+# common buffers
+map global tabs c ": edit %val{config}/kakrc<ret>" -docstring "config (kakrc)"
 map global tabs s ": edit -scratch *scratch*<ret>" -docstring "*scratch*"
 map global tabs u ": buffer *debug*<ret>" -docstring "*debug*"
+
+# modification
+map global tabs r ": rename-buffer-prompt<ret>" -docstring "rename"
 
 # deletion
 map global tabs d ": delete-buffer<ret>" -docstring "delete (current)"
 map global tabs D ": delete-saved-buffers<ret>" -docstring "delete (saved)"
 map global tabs o ": delete-all-saved-except-current<ret>" -docstring "only (saved)"
 map global tabs O ": delete-all-except-current<ret>" -docstring "only (force)"
-
-# modification
-map global tabs H ": tab-move prev<ret>" -docstring "drag prev ←"
-map global tabs L ": tab-move next<ret>" -docstring "drag next →"
-map global tabs r ": rename-buffer-prompt<ret>" -docstring "rename"
