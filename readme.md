@@ -2,7 +2,7 @@
 
 View open buffers in status line, like tabs, and navigate between them quickly.
 
-Inspired by [Delapouite's `kakoune-buffers`][1].
+Inspired by [Delapouite's `kakoune-buffers`][1]. This plugin is **incompatible with [powerline.kak](https://github.com/andreyorst/powerline.kak)**, see [here](https://github.com/enricozb/tabs.kak/issues/1#issuecomment-737410152) for why.
 
 [![asciicast](https://asciinema.org/a/JuHNPO8i7nkOmCBQOCfZ8UEOf.svg)][2]
 
