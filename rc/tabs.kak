@@ -2,10 +2,9 @@ declare-user-mode tabs
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
 declare-option str modeline_tabs_percentage 80
-declare-option str modeline_buflist
-declare-option str switch_to_tab
-declare-option str tab_separator
-set-option global tab_separator "|"
+declare-option str tab_separator "|"
+
+declare-option -hidden str modeline_buflist
 
 define-command rename-buffer-prompt %{
   prompt -init %sh{ basename "$kak_bufname" } rename: %{
@@ -17,7 +16,7 @@ define-command rename-buffer-prompt %{
 define-command -hidden refresh-buflist %{
   set-option buffer modeline_buflist %sh{
 
-    # sets the variable `tabs` with the modelinefmt-formatted string for the current buflist
+    # sets `tabs` to the modelinefmt-formatted string for the current buflist
     render_tabs() {
       eval "set -- $kak_quoted_buflist"
 
