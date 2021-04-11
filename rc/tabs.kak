@@ -1,7 +1,7 @@
 declare-user-mode tabs
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
-declare-option str modeline_buflist_proportion 80
+declare-option str modeline_tabs_percentage 80
 declare-option str modeline_buflist
 declare-option str switch_to_tab
 declare-option str tab_separator
@@ -52,7 +52,7 @@ define-command -hidden refresh-buflist %{
     }
 
     padding=" "
-    max_length=$(($(tput cols) * $kak_opt_modeline_buflist_proportion / 100))
+    max_length=$(($(tput cols) * $kak_opt_modeline_tabs_percentage / 100))
     max_tab_length=$max_length
 
     render_tabs

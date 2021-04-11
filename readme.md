@@ -27,6 +27,15 @@ buffer manipulation. The `modelinefmt_tabs` is the `modelinefmt` that comes befo
 tabs in the statusline. It slightly modifies the default to remove the buffer name and
 to decrease the overall size of the status line.
 
+### Change modelinefmt Space Reserved for tabs.kak
+Since it's common to have many tabs open at once, `tabs.kak` by default only takes up
+80% of the width of the terminal in the status line, and the rest is reserved for
+anything in `modelinefmt_tabs`. In order to change this percentage, to 65% for example,
+in order to allow for more space for `modelinefmt_tabs`, set the following option:
+```
+set-option global modeline_tabs_percentage 65
+```
+
 ### Custom Separator
 It's also recommended to override the default tab separator `|` with the full height
 vertical bar `│`. **Please be aware that there have been reports of the full height
