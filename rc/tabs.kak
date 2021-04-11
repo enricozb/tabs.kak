@@ -1,6 +1,7 @@
 declare-user-mode tabs
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
+declare-option str modeline_buflist_proportion 80
 declare-option str modeline_buflist
 declare-option str switch_to_tab
 declare-option str tab_separator
@@ -15,22 +16,62 @@ define-command rename-buffer-prompt %{
 
 define-command -hidden refresh-buflist %{
   set-option buffer modeline_buflist %sh{
-    tabs=""
 
-    eval "set -- $kak_quoted_buflist"
-    for buf; do
-      if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
-        continue
-      fi
+    # sets the variable `tabs` with the modelinefmt-formatted string for the current buflist
+    render_tabs() {
+      eval "set -- $kak_quoted_buflist"
 
-      if [ "$buf" = "$kak_bufname" ]; then
-        tabs="$tabs$kak_opt_tab_separator{Prompt} $(basename "$buf") {Default}"
-      else
-        tabs="$tabs$kak_opt_tab_separator{LineNumbers} $(basename "$buf") {Default}"
-      fi
-    done
-    echo "$tabs$kak_opt_tab_separator"
+      tabs=""
+      tabs_length=0
+      num_bufs=0
+
+      for buf; do
+        # if the buffer begins with an *, and we're not on that buffer, don't show it in tabs
+        if [ "${buf%${buf#?}}" = '*' ] && [ "$kak_bufname" != "$buf" ]; then
+          continue
+        fi
+
+        num_bufs=$(($num_bufs + 1))
+        base_bufname=$(basename "$buf" | tail -c $max_tab_length)
+
+        # highlight the current tab
+        if [ "$buf" = "$kak_bufname" ]; then
+          tabs="$tabs$kak_opt_tab_separator{Prompt}$padding$base_bufname$padding{Default}"
+          tabs_length=$(($tabs_length + ${#kak_opt_tab_separator} + ${#padding} + ${#base_bufname} + ${#padding}))
+
+        # otherwise render it in gray
+        else
+          tabs="$tabs$kak_opt_tab_separator{LineNumbers}$padding$base_bufname$padding{Default}"
+          tabs_length=$(($tabs_length + ${#kak_opt_tab_separator} + ${#padding} + ${#base_bufname} + ${#padding}))
+        fi
+      done
+
+      # account for the last separator
+      tabs="$tabs$kak_opt_tab_separator"
+      tabs_length=$(($tabs_length + ${#kak_opt_tab_separator}))
+    }
+
+    padding=" "
+    max_length=$(($(tput cols) * $kak_opt_modeline_buflist_proportion / 100))
+    max_tab_length=$max_length
+
+    render_tabs
+
+    # if tabs are too large, first try rendering without padding
+    if [ $tabs_length -ge $max_length ]; then
+      padding=""
+      render_tabs
+    fi
+
+    # if tabs are still too large, render shortened versions of the names
+    if [ $tabs_length -ge $max_length ]; then
+      max_tab_length=$(($max_length / $num_bufs))
+      render_tabs
+    fi
+
+    echo "$tabs"
   }
+
   set-option buffer modelinefmt "%opt{modelinefmt_tabs} - %opt{modeline_buflist}"
 }
 
