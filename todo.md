@@ -2,7 +2,8 @@
 
 ## Bugs
 - debug buffer ordering
-- If too many buffers are open, you can't see where you're navigating.
+- `shrink` mode is slow
+  - maybe rewrite in lua
 
 ## Features
 - Show buffer modification status.

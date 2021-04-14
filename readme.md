@@ -27,7 +27,33 @@ buffer manipulation. The `modelinefmt_tabs` is the `modelinefmt` that comes befo
 tabs in the statusline. It slightly modifies the default to remove the buffer name and
 to decrease the overall size of the status line.
 
-### Change modelinefmt Space Reserved for tabs.kak
+### Overflow
+There are two behaviors when there are more tabs visible than can be displayed:
+- `shrink`: All open tabs are displayed but they occupy less space. For example,
+  if we have 10 tabs displayed in a narrow window, all named `readme.md` the tab bar would
+  look like:
+  ```
+  |me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|
+  ```
+  Notice how the tail of the files are shown and the tabs are much narrower.
+
+- `scroll`: As many open tabs are shown as possible, without shrinking them, but instead
+  scrolling through the tabs as they are navigated. For example, in the scenario above
+  the tab bar would look like:
+  ```
+  … readme.md | readme.md | readme.md | readme.md …
+  ```
+  Notice the `…` surrounding the tab bar, indicating that there are more tabs than are
+  being displayed.
+  **Note: This mode requires the [luar](https://github.com/gustavo-hms/luar) plugin**
+
+To select one of the two modes, use
+```
+set-option global tabs_overlow "scroll"
+```
+The default is `shrink`.
+
+### Reserving Space for Tabs
 Since it's common to have many tabs open at once, `tabs.kak` by default only takes up
 80% of the width of the terminal in the status line, and the rest is reserved for
 anything in `modelinefmt_tabs`. In order to change this percentage, to 65% for example,
