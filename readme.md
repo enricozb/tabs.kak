@@ -33,7 +33,7 @@ There are two behaviors when there are more tabs visible than can be displayed:
   if we have 10 tabs displayed in a narrow window, all named `readme.md` the tab bar would
   look like:
   ```
-  |me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|me.md|
+  │me.md│me.md│me.md│me.md│me.md│me.md│me.md│me.md│me.md│me.md│me.md│
   ```
   Notice how the tail of the files are shown and the tabs are much narrower.
 
@@ -41,7 +41,7 @@ There are two behaviors when there are more tabs visible than can be displayed:
   scrolling through the tabs as they are navigated. For example, in the scenario above
   the tab bar would look like:
   ```
-  … readme.md | readme.md | readme.md | readme.md …
+  … readme.md │ readme.md │ readme.md │ readme.md …
   ```
   Notice the `…` surrounding the tab bar, indicating that there are more tabs than are
   being displayed.
