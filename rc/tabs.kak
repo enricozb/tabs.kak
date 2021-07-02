@@ -308,12 +308,12 @@ define-command delete-all-except-current -docstring "delete all buffers except c
   refresh-buflist
 }
 
-hook global WinCreate .* %{
-  hook window WinDisplay .* %{
+hook -group tabs-kak global WinCreate .* %{
+  hook -group tabs-kak window WinDisplay .* %{
     evaluate-commands refresh-buflist
   }
 
-  hook window NormalIdle .* %{
+  hook -group tabs-kak window NormalIdle .* %{
     evaluate-commands refresh-buflist
   }
 }
