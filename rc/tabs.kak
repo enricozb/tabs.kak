@@ -139,7 +139,7 @@ define-command -hidden refresh-buflist-shrink %{
         fi
 
         num_bufs=$(($num_bufs + 1))
-        basename_buf=$(basename "$buf" | tail -c $max_tab_length)
+        basename_buf=$(echo "${buf##*/}" | tail -c $max_tab_length)
 
         if [ "$buf" = "$kak_bufname" ]; then
           tab_color="{Prompt}"
