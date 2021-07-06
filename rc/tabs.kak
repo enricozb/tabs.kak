@@ -2,7 +2,16 @@ require-module luar
 
 declare-user-mode tabs
 
-declare-option -hidden str tabs_bin %sh{ echo "$(dirname $kak_source)/../bin/tabs.com" }
+# copy tabs.com file from dist/ to bin/ if it doesn't already exist
+declare-option -hidden str tabs_bin %sh{
+  dir="$(dirname $kak_source)/../"
+  bin="$dir/bin/tabs.com"
+  if [ ! -f "$bin" ]; then
+    mkdir "$dir/bin"
+    cp "$dir/dist/tabs.com" "$bin"
+  fi
+  echo "$bin"
+}
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
 declare-option str modeline_tabs_percentage 80

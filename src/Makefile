@@ -5,4 +5,4 @@ all: tabs.c
 		-include cosmopolitan/cosmopolitan.h cosmopolitan/crt.o cosmopolitan/ape.o cosmopolitan/cosmopolitan.a
 
 	objcopy -S -O binary tabs.com.dbg tabs.com
-	cp tabs.com ../bin/
+	cp tabs.com ../dist/
