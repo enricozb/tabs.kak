@@ -4,6 +4,7 @@
 - debug buffer ordering
 - `shrink` mode is slow
   - maybe rewrite in lua
+-
 
 ## Features
 - Show buffer modification status.
