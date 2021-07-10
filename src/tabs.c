@@ -77,17 +77,17 @@ static inline void write_str(char *s) {
   }
 }
 
+static char *focused_buf_format = "{Prompt}";
+static int focused_buf_format_len = 8;
+static char *other_buf_format = "{LineNumbers}";
+static int other_buf_format_len = 13;
+static char *sep_format = "{Default}";
+static int sep_format_len = 9;
+
 // tabs_full prints out the modelinefmt assuming we have more space than
 // necessary to show all tabs
 void tabs_full(int len_total, struct args *args) {
   fprintf(stderr, "tabs_full len_total=%i\n", len_total);
-
-  static char *focused_buf_format = "{Prompt}";
-  static int focused_buf_format_len = 8;
-  static char *other_buf_format = "{LineNumbers}";
-  static int other_buf_format_len = 13;
-  static char *sep_format = "{Default}";
-  static int sep_format_len = 9;
 
   // focused buffer + other buffers + separator formats
   // separator doesn't have a +1 here because the sepator format is {Default},
@@ -106,7 +106,7 @@ void tabs_full(int len_total, struct args *args) {
   //   write_char(' ');
   // }
 
-  // print modelinefmt
+  // create modelinefmt
   write_char('|');
   for (int i = 0; i < args->numbufs; i++) {
     write_char(' ');
@@ -121,7 +121,62 @@ void tabs_full(int len_total, struct args *args) {
   printf("%s\n", modelinefmt);
 }
 
-void tabs_compact(struct args *args) { printf("not implemented...\n"); }
+void tabs_compact(struct args *args) {
+  fprintf(stderr, "tabs_compact\n");
+  int num_seps = args->numbufs + 1;
+  int num_spaces = 2 * args->numbufs;
+
+  // the space available for the names of non-focused buffers.
+  int other_bufs_available_space =
+      args->cols - num_seps - num_spaces - args->buflens[args->focused_buf_idx];
+
+  // this is the allowed space for the name of each non-focused buffer.
+  int space_per_bufs = other_bufs_available_space / (args->numbufs - 1);
+  int space_per_bufs_rem = other_bufs_available_space % (args->numbufs - 1);
+
+  // focused buffer + other buffers + separator formats
+  // separator doesn't have a +1 here because the sepator format is
+  // {Default}, which the first separator has for free.
+  int len_formats = focused_buf_format_len +
+                    other_buf_format_len * (args->numbufs - 1) +
+                    sep_format_len * (args->numbufs);
+
+  init_modelinefmt(args->cols + len_formats);
+
+  // create modelinefmt
+  write_char('|');
+  for (int i = 0; i < args->numbufs; i++) {
+    write_char(' ');
+    write_str(i == args->focused_buf_idx ? focused_buf_format
+                                         : other_buf_format);
+    if (i == args->focused_buf_idx) {
+      write_str(args->buffers[i]);
+    } else {
+      // if the length of this buffers is greater than the allocated space
+      // per buffer, cut it off. If there is additional remaining space,
+      // increment the cutoff by one.
+      if (args->buflens[i] > space_per_bufs && space_per_bufs_rem > 0) {
+        args->buffers[i][space_per_bufs + 1] = 0;
+        space_per_bufs_rem--;
+      } else if (args->buflens[i] > space_per_bufs) {
+        args->buffers[i][space_per_bufs] = 0;
+      }
+      write_str(args->buffers[i]);
+    }
+
+    write_str(sep_format);
+    write_char(' ');
+    write_char('|');
+  }
+
+  // right pad with any remaining space
+  while (space_per_bufs_rem > 0) {
+    write_char(' ');
+    space_per_bufs_rem--;
+  }
+
+  printf("%s\n", modelinefmt);
+}
 
 void tabs(struct args *args) {
   // length of all buffers
