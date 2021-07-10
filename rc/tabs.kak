@@ -224,6 +224,10 @@ hook -group tabs-kak global WinCreate .* %{
   hook -group tabs-kak window WinDisplay .* %{
     evaluate-commands refresh-buflist
   }
+
+  hook -group tabs-kak window WinResize .* %{
+    evaluate-commands refresh-buflist
+  }
 }
 
 
