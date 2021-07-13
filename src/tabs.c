@@ -83,6 +83,8 @@ static char *other_buf_format = "{LineNumbers}";
 static int other_buf_format_len = 13;
 static char *sep_format = "{Default}";
 static int sep_format_len = 9;
+static char *ellipses = "…";
+static int ellipses_len = 3;
 
 // tabs_full prints out the modelinefmt assuming we have more space than
 // necessary to show all tabs
@@ -137,9 +139,18 @@ void tabs_compact(struct args *args) {
   // focused buffer + other buffers + separator formats
   // separator doesn't have a +1 here because the sepator format is
   // {Default}, which the first separator has for free.
-  int len_formats = focused_buf_format_len +
-                    other_buf_format_len * (args->numbufs - 1) +
-                    sep_format_len * (args->numbufs);
+  int len_formats =
+      focused_buf_format_len + other_buf_format_len * (args->numbufs - 1) +
+      sep_format_len * (args->numbufs) + ellipses_len * (args->numbufs);
+
+  fprintf(stderr,
+          "vars:\n"
+          "  available_space=%d\n"
+          "  space_per=%d\n"
+          "  space_rem=%d\n"
+          "  len_formats=%d\n",
+          other_bufs_available_space, space_per_bufs, space_per_bufs_rem,
+          len_formats);
 
   init_modelinefmt(args->cols + len_formats);
 
@@ -155,13 +166,17 @@ void tabs_compact(struct args *args) {
       // if the length of this buffers is greater than the allocated space
       // per buffer, cut it off. If there is additional remaining space,
       // increment the cutoff by one.
-      if (args->buflens[i] > space_per_bufs && space_per_bufs_rem > 0) {
-        args->buffers[i][space_per_bufs + 1] = 0;
-        space_per_bufs_rem--;
-      } else if (args->buflens[i] > space_per_bufs) {
+      bool too_long = args->buflens[i] > space_per_bufs;
+      if (too_long && space_per_bufs_rem > 0) {
         args->buffers[i][space_per_bufs] = 0;
+        space_per_bufs_rem--;
+      } else if (too_long) {
+        args->buffers[i][space_per_bufs - 1] = 0;
       }
       write_str(args->buffers[i]);
+      if (too_long) {
+        write_str(ellipses);
+      }
     }
 
     write_str(sep_format);
@@ -170,10 +185,10 @@ void tabs_compact(struct args *args) {
   }
 
   // right pad with any remaining space
-  while (space_per_bufs_rem > 0) {
-    write_char(' ');
-    space_per_bufs_rem--;
-  }
+  // while (space_per_bufs_rem > 0) {
+  //   write_char(' ');
+  //   space_per_bufs_rem--;
+  // }
 
   printf("%s\n", modelinefmt);
 }
