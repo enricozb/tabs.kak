@@ -33,63 +33,6 @@ define-command -hidden refresh-buflist %{
   set-option buffer modelinefmt "%opt{modelinefmt_tabs} - %opt{modeline_buflist}"
 }
 
-define-command -hidden refresh-buflist-shrink %{
-  set-option buffer modeline_buflist %sh{
-
-    # sets `tabs` to the modelinefmt-formatted string for the current buflist
-    render_tabs() {
-      eval "set -- $kak_quoted_buflist"
-
-      tabs=""
-      tabs_length=0
-      num_bufs=0
-
-      for buf; do
-        # if the buffer begins with an *, and we're not on that buffer, don't show it in tabs
-        if [ "${buf%${buf#?}}" = '*' ] && [ "$kak_bufname" != "$buf" ]; then
-          continue
-        fi
-
-        num_bufs=$(($num_bufs + 1))
-        basename_buf=$(echo "${buf##*/}" | tail -c $max_tab_length)
-
-        if [ "$buf" = "$kak_bufname" ]; then
-          tab_color="{Prompt}"
-        else
-          tab_color="{LineNumbers}"
-        fi
-
-        tabs="$tabs$kak_opt_tab_separator$tab_color$padding$basename_buf$padding{Default}"
-        tabs_length=$(($tabs_length + ${#kak_opt_tab_separator} + ${#padding} + ${#basename_buf} + ${#padding}))
-      done
-
-      # account for the last separator
-      tabs="$tabs$kak_opt_tab_separator"
-      tabs_length=$(($tabs_length + ${#kak_opt_tab_separator}))
-    }
-
-    padding=" "
-    max_length=$(($(tput cols) * $kak_opt_modeline_tabs_percentage / 100))
-    max_tab_length=$max_length
-
-    render_tabs
-
-    # if tabs are too large, first try rendering without padding
-    if [ $tabs_length -ge $max_length ]; then
-      padding=""
-      render_tabs
-    fi
-
-    # if tabs are still too large, render shortened versions of the names
-    if [ $tabs_length -ge $max_length ]; then
-      max_tab_length=$(($max_length / $num_bufs))
-      render_tabs
-    fi
-
-    echo "$tabs"
-  }
-}
-
 define-command tab-nav -params 1 %{
   execute-keys %sh{
     direction="$1"
@@ -113,10 +56,10 @@ define-command tab-nav -params 1 %{
     done
     next="$buf"
 
-    if [ "$direction" = "prev" ] && [ -n "$prev" ]; then
-      echo ": buffer $prev<ret>"
-    elif [ "$direction" = "next" ] && [ -n "$next" ]; then
-      echo ": buffer $next<ret>"
+    if [ "$direction" = 'prev' ] && [ -n "$prev" ] && [ "$prev" != '*debug*' ]; then
+      echo ": buffer '$prev'<ret>"
+    elif [ "$direction" = 'next' ] && [ -n "$next" ] && [ "$next" != '*debug*' ]; then
+      echo ": buffer '$next'<ret>"
     fi
   }
   refresh-buflist
@@ -244,7 +187,7 @@ map global tabs L ": tab-move next<ret>" -docstring "→ drag right"
 # common buffers
 map global tabs c ": edit %val{config}/kakrc<ret>" -docstring "config (kakrc)"
 map global tabs s ": edit -scratch *scratch*<ret>" -docstring "*scratch*"
-map global tabs u ": buffer *debug*<ret>" -docstring "*debug*"
+map global tabs u ": edit -debug *debug*<ret>" -docstring "*debug*"
 
 # modification
 map global tabs r ": rename-buffer-prompt<ret>" -docstring "rename"

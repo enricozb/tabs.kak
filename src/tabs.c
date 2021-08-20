@@ -16,10 +16,10 @@ struct args *parse(int argc, char *argv[]) {
     exit(1);
   }
 
-  fprintf(stderr, "args:\n");
-  for (int i = 0; i < argc; i++) {
-    fprintf(stderr, "%s\n", argv[i]);
-  }
+  // fprintf(stderr, "args:\n");
+  // for (int i = 0; i < argc; i++) {
+  //   fprintf(stderr, "%s\n", argv[i]);
+  // }
 
   struct args *args = (struct args *)malloc(sizeof(struct args));
 
@@ -28,20 +28,36 @@ struct args *parse(int argc, char *argv[]) {
   args->focused_buf_idx = -1;
   args->numbufs = argc - NUM_ARGS - 1;
   args->buflens = (int *)malloc(args->numbufs * sizeof(int));
-  args->buffers = (argv + NUM_ARGS + 1);
+  args->buffers = (char **)malloc(args->numbufs * sizeof(char *));
+
+  char **provided_buffers = argv + NUM_ARGS + 1;
 
   char *focused_buf = argv[4];
+  bool on_debug = strcmp(focused_buf, "*debug*") == 0;
+  int num_hidden_bufs = 0;
+  int buffers_idx = 0;
+
   for (int i = 0; i < args->numbufs; i++) {
-    fprintf(stderr, "buffer: %s\n", args->buffers[i]);
-    if (args->focused_buf_idx == -1 &&
-        strcmp(args->buffers[i], focused_buf) == 0) {
-      args->focused_buf_idx = i;
-      fprintf(stderr, "focused_buf_idx=%i\n", i);
+    char *buf = provided_buffers[i];
+
+    // fprintf(stderr, "buffer: %s\n", buf);
+    if (args->focused_buf_idx == -1 && strcmp(buf, focused_buf) == 0) {
+      args->focused_buf_idx = buffers_idx;
+      // fprintf(stderr, "focused_buf_idx=%i\n", buffers_idx);
     }
 
-    args->buffers[i] = basename(args->buffers[i]);
-    args->buflens[i] = strlen(args->buffers[i]);
+    if (!on_debug && strcmp(buf, "*debug*") == 0) {
+      fprintf(stderr, "decreasing: %s\n", buf);
+      num_hidden_bufs++;
+      continue;
+    }
+
+    args->buffers[buffers_idx] = basename(buf);
+    args->buflens[buffers_idx] = strlen(args->buffers[buffers_idx]);
+    buffers_idx++;
   }
+
+  args->numbufs -= num_hidden_bufs;
 
   return args;
 }
@@ -57,7 +73,7 @@ static inline void init_modelinefmt(int len) {
 }
 
 static inline void write_char(char c) {
-  fprintf(stderr, "writing %c\n", c);
+  // fprintf(stderr, "writing %c\n", c);
 
   if (modelinefmt_i >= modelinefmt_len) {
     printf("not enough modelinefmt space (%i) \n", modelinefmt_len);
@@ -69,7 +85,7 @@ static inline void write_char(char c) {
 }
 
 static inline void write_str(char *s) {
-  fprintf(stderr, "writing %s\n", s);
+  // fprintf(stderr, "writing %s\n", s);
 
   while (*s) {
     write_char(*s);
@@ -89,7 +105,7 @@ static int ellipses_len = 3;
 // tabs_full prints out the modelinefmt assuming we have more space than
 // necessary to show all tabs
 void tabs_full(int len_total, struct args *args) {
-  fprintf(stderr, "tabs_full len_total=%i\n", len_total);
+  // fprintf(stderr, "tabs_full len_total=%i\n", len_total);
 
   // focused buffer + other buffers + separator formats
   // separator doesn't have a +1 here because the sepator format is {Default},
@@ -98,8 +114,8 @@ void tabs_full(int len_total, struct args *args) {
                     other_buf_format_len * (args->numbufs - 1) +
                     sep_format_len * (args->numbufs);
 
-  fprintf(stderr, "len_formats=%i\n", len_formats);
-  fprintf(stderr, "args->cols=%i\n", args->cols);
+  // fprintf(stderr, "len_formats=%i\n", len_formats);
+  // fprintf(stderr, "args->cols=%i\n", args->cols);
   init_modelinefmt(len_total + len_formats);
 
   // print any leading whitespace
@@ -124,7 +140,7 @@ void tabs_full(int len_total, struct args *args) {
 }
 
 void tabs_compact(struct args *args) {
-  fprintf(stderr, "tabs_compact\n");
+  // fprintf(stderr, "tabs_compact\n");
   int num_seps = args->numbufs + 1;
   int num_spaces = 2 * args->numbufs;
 
@@ -143,14 +159,14 @@ void tabs_compact(struct args *args) {
       focused_buf_format_len + other_buf_format_len * (args->numbufs - 1) +
       sep_format_len * (args->numbufs) + ellipses_len * (args->numbufs);
 
-  fprintf(stderr,
-          "vars:\n"
-          "  available_space=%d\n"
-          "  space_per=%d\n"
-          "  space_rem=%d\n"
-          "  len_formats=%d\n",
-          other_bufs_available_space, space_per_bufs, space_per_bufs_rem,
-          len_formats);
+  // fprintf(stderr,
+  //         "vars:\n"
+  //         "  available_space=%d\n"
+  //         "  space_per=%d\n"
+  //         "  space_rem=%d\n"
+  //         "  len_formats=%d\n",
+  //         other_bufs_available_space, space_per_bufs, space_per_bufs_rem,
+  //         len_formats);
 
   init_modelinefmt(args->cols + len_formats);
 
