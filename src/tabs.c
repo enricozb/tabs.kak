@@ -47,7 +47,6 @@ struct args *parse(int argc, char *argv[]) {
     }
 
     if (!on_debug && strcmp(buf, "*debug*") == 0) {
-      fprintf(stderr, "decreasing: %s\n", buf);
       num_hidden_bufs++;
       continue;
     }
