@@ -5,12 +5,18 @@ declare-user-mode tabs
 # copy tabs.com file from dist/ to bin/ if it doesn't already exist
 declare-option -hidden str tabs_bin %sh{
   dir="$(dirname $kak_source)/../"
-  bin="$dir/bin/tabs.com"
-  if [ ! -f "$bin" ]; then
-    mkdir "$dir/bin"
-    cp "$dir/dist/tabs.com" "$bin"
+  bin_from_git="$dir/dist/tabs.com"
+  bin_to_use="$dir/bin/tabs.com"
+
+  # if the binary to use is different than the one from git, copy over the one from git
+  if [ ! -f "$bin_to_use" ]; then
+    mkdir -p "$(dirname $bin_to_use)"
+    cp "$bin_from_git" "$bin_to_use"
+  elif ! cmp -s "$bin_from_git" "$bin_to_use"; then
+    cp "$bin_from_git" "$bin_to_use"
   fi
-  echo "$bin"
+
+  printf "$bin_to_use"
 }
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
