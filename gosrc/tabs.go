@@ -88,8 +88,8 @@ func (a *Args) len() int {
 		buflens += len(buf)
 	}
 
-	seps := len(a.buffers) + 1
-	spaces := len(a.buffers) * len(a.separator)
+	seps := (len(a.buffers) + 1) * len(a.separator)
+	spaces := len(a.buffers) * 2
 
 	return buflens + seps + spaces
 }
