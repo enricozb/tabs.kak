@@ -1,5 +1,3 @@
-require-module luar
-
 declare-user-mode tabs
 
 # copy tabs.com file from dist/ to bin/ if it doesn't already exist
