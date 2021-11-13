@@ -5,10 +5,14 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 const NUM_ARGS = 4
 const DEBUG_BUFFER = "*debug*"
+const FOCUSED_FMT = "{Prompt}"
+const OTHER_FMT = "{LineNumbers}"
+const SEPARATOR_FMT = "{Default}"
 
 func printUsage() {
 	fmt.Println(`usage: tabs <cols> <percentage> <separator> <focused> <buf1 buf2 ...>
@@ -92,17 +96,40 @@ func (a *Args) len() int {
 
 // modelinefmt computes modelinefmt, using a compact representation if there are too many buffers
 func (a *Args) modelinefmt() (string, error) {
-	if a.len() < a.columns {
+	if a.len() > a.columns {
 		return a.modelinefmtCompact()
 	}
 
 	return a.modelinefmtFull()
 }
 
+// modelinefmtFull computes modelinefmt without any shortening
 func (a *Args) modelinefmtFull() (string, error) {
-	return "full", nil
+	var modelinefmt []string
+	push := func(s string) {
+		modelinefmt = append(modelinefmt, s)
+	}
+
+	// constructs modelinefmt slice like []string{"|", " ", "{LineNumbers}", "bufname.txt", ...}
+	push(a.separator)
+	for i, buf := range a.buffers {
+		push(" ")
+		if i == a.focused {
+			push(FOCUSED_FMT)
+		} else {
+			push(OTHER_FMT)
+		}
+		push(buf)
+		push(" ")
+
+		push(SEPARATOR_FMT)
+		push(a.separator)
+	}
+
+	return strings.Join(modelinefmt, ""), nil
 }
 
+// modelinefmtCompact computes modelinefmt without exceeding a.columns in effective length
 func (a *Args) modelinefmtCompact() (string, error) {
 	return "compact", nil
 }

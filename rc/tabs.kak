@@ -153,6 +153,18 @@ define-command delete-all-except-current -docstring "delete all buffers except c
   refresh-buflist
 }
 
+define-command tabs-recommended-bindings -docstring "recommended bindings for tabs.kak" %{
+  map global normal ^ q
+  map global normal <a-^> Q
+  map global normal q b
+  map global normal Q B
+  map global normal <a-q> <a-b>
+  map global normal <a-Q> <a-B>
+
+  map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
+  map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
+}
+
 hook -group tabs-kak global WinCreate .* %{
   hook -group tabs-kak window WinDisplay .* %{
     evaluate-commands refresh-buflist
