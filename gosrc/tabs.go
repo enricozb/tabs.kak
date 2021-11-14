@@ -10,6 +10,7 @@ import (
 
 const NUM_ARGS = 4
 const DEBUG_BUFFER = "*debug*"
+const ELLIPSES = "…"
 const FOCUSED_FMT = "{Prompt}"
 const OTHER_FMT = "{LineNumbers}"
 const SEPARATOR_FMT = "{Default}"
@@ -95,7 +96,7 @@ func (a *Args) len() int {
 }
 
 // modelinefmt computes modelinefmt, using a compact representation if there are too many buffers
-func (a *Args) modelinefmt() (string, error) {
+func (a *Args) modelinefmt() string {
 	if a.len() > a.columns {
 		return a.modelinefmtCompact()
 	}
@@ -104,34 +105,73 @@ func (a *Args) modelinefmt() (string, error) {
 }
 
 // modelinefmtFull computes modelinefmt without any shortening
-func (a *Args) modelinefmtFull() (string, error) {
-	var modelinefmt []string
-	push := func(s string) {
-		modelinefmt = append(modelinefmt, s)
-	}
+func (a *Args) modelinefmtFull() string {
+	var modelinefmt strings.Builder
 
 	// constructs modelinefmt slice like []string{"|", " ", "{LineNumbers}", "bufname.txt", ...}
-	push(a.separator)
+	modelinefmt.WriteString(a.separator)
 	for i, buf := range a.buffers {
-		push(" ")
+		modelinefmt.WriteString(" ")
 		if i == a.focused {
-			push(FOCUSED_FMT)
+			modelinefmt.WriteString(FOCUSED_FMT)
 		} else {
-			push(OTHER_FMT)
+			modelinefmt.WriteString(OTHER_FMT)
 		}
-		push(buf)
-		push(" ")
+		modelinefmt.WriteString(buf)
+		modelinefmt.WriteString(" ")
 
-		push(SEPARATOR_FMT)
-		push(a.separator)
+		modelinefmt.WriteString(SEPARATOR_FMT)
+		modelinefmt.WriteString(a.separator)
 	}
 
-	return strings.Join(modelinefmt, ""), nil
+	return modelinefmt.String()
 }
 
 // modelinefmtCompact computes modelinefmt without exceeding a.columns in effective length
-func (a *Args) modelinefmtCompact() (string, error) {
-	return "compact", nil
+func (a *Args) modelinefmtCompact() string {
+	var modelinefmt strings.Builder
+
+	// compute available space for non-focused buffer names
+	seps := (len(a.buffers) + 1) * len(a.separator)
+	spaces := len(a.buffers) * 2
+
+	otherBufsAvailableSpace := a.columns - seps - spaces - len(a.buffers[a.focused])
+
+	spacePerBuf := otherBufsAvailableSpace / (len(a.buffers) - 1)
+	spacePerBufRem := otherBufsAvailableSpace % (len(a.buffers) - 1)
+
+	modelinefmt.WriteString(a.separator)
+	for i, buf := range a.buffers {
+		modelinefmt.WriteString(" ")
+		if i == a.focused {
+			modelinefmt.WriteString(FOCUSED_FMT)
+		} else {
+			modelinefmt.WriteString(OTHER_FMT)
+			if len(buf) > spacePerBuf {
+				// compute how much space will be allocated for this buffer, potentially adding additional space if available
+				space := spacePerBuf
+				if spacePerBufRem > 0 {
+					space++
+					spacePerBufRem--
+				}
+
+				// if we don't have enough space, trim the buffer
+				if space <= 0 {
+					buf = ""
+				} else if len(buf) > space {
+					buf = buf[:space-1] + ELLIPSES
+				}
+			}
+		}
+
+		modelinefmt.WriteString(buf)
+		modelinefmt.WriteString(" ")
+
+		modelinefmt.WriteString(SEPARATOR_FMT)
+		modelinefmt.WriteString(a.separator)
+	}
+
+	return modelinefmt.String()
 }
 
 func main() {
@@ -142,11 +182,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	line, err := args.modelinefmt()
-	if err != nil {
-		fmt.Printf("modelinefmt: %v", err)
-		os.Exit(1)
-	}
-
-	fmt.Println(line)
+	fmt.Println(args.modelinefmt())
 }
