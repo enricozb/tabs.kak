@@ -1,5 +1,3 @@
-require-module luar
-
 declare-user-mode tabs
 
 declare-option str modelinefmt_tabs %opt{modelinefmt}
