@@ -29,12 +29,12 @@ define-command tab-nav -params 1 %{
 
     eval "set -- $kak_quoted_buflist"
     for buf; do
-      if $done; then
-        break
-      fi
-
       if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
         continue
+      fi
+
+      if $done; then
+        break
       fi
 
       if [ "$buf" = "$kak_bufname" ]; then
@@ -61,12 +61,12 @@ define-command tab-move -params 1 %{
 
     eval "set -- $kak_quoted_buflist"
     for buf; do
-      if $done; then
-        break
-      fi
-
       if [ "$buf" = "*debug*" ] && [ "$kak_bufname" != "*debug*" ]; then
         continue
+      fi
+
+      if $done; then
+        break
       fi
 
       if [ "$buf" = "$kak_bufname" ]; then
