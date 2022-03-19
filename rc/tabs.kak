@@ -17,7 +17,8 @@ define-command rename-buffer-prompt %{
 
 define-command -hidden refresh-buflist %{
   set-option buffer modeline_buflist %sh{
-    eval "$kak_opt_tabs_bin $(tput cols) "$kak_opt_modeline_tabs_percentage" '$kak_opt_tab_separator' '$kak_bufname' $kak_quoted_buflist"
+    eval $(resize)
+    eval "$kak_opt_tabs_bin $COLUMNS "$kak_opt_modeline_tabs_percentage" '$kak_opt_tab_separator' '$kak_bufname' $kak_quoted_buflist"
   }
   set-option buffer modelinefmt "%opt{modelinefmt_tabs} - %opt{modeline_buflist}"
 }
