@@ -12,6 +12,9 @@ pub struct Tabs {
   width: usize,
 }
 
+/// `Tabs` methods.
+///
+/// Methods named `exec_*` print a kakoune command.
 impl Tabs {
   /// Creates a new `Tabs`.
   pub fn new(buflist: Vec<String>, focused: &str, width: usize) -> Result<Self> {
@@ -26,38 +29,76 @@ impl Tabs {
     })
   }
 
-  /// Perform an action.
-  pub fn action(&mut self, action: &Action) -> String {
-    match action {
-      Action::Prev => self.focused = self.focused.saturating_sub(1),
-      Action::Next => self.focused = self.focused.saturating_add(1),
-    }
+  /// Index of buffer before focused.
+  pub fn prev_focused(&self) -> usize {
+    self.focused.saturating_sub(1)
+  }
 
-    if self.focused >= self.buflist.len() {
-      self.focused = self.buflist.len() - 1
-    }
-
-    match action {
-      Action::Prev | Action::Next => format!("buffer {}", self.buflist[self.focused]),
+  /// Index of buffer after focused.
+  pub fn next_focused(&self) -> usize {
+    if self.focused < self.buflist.len() - 1 {
+      self.focused + 1
+    } else {
+      self.focused
     }
   }
 
   /// Convert to a modelinefmt.
-  pub fn modelinefmt(self) -> String {
+  pub fn modelinefmt(&self) -> String {
     let formatted: Vec<_> = self
       .buflist
-      .into_iter()
+      .iter()
       .enumerate()
       .map(|(i, buf)| {
         if i == self.focused {
           format!("{{Prompt}}{buf}{{Default}}")
         } else {
-          format!("{{Default}}{buf}{{Default}}")
+          format!("{{LineNumbers}}{buf}{{Default}}")
         }
       })
       .collect();
 
     format!("| {} |", formatted.join(" | "))
+  }
+
+  /// Perform an action.
+  pub fn exec_action(mut self, action: &Action) {
+    let new_focused = match action {
+      Action::Prev | Action::DragLeft => self.prev_focused(),
+      Action::Next | Action::DragRight => self.next_focused(),
+    };
+
+    match action {
+      Action::Prev | Action::Next => {
+        self.focused = new_focused;
+        self.exec_buffer()
+      }
+      Action::DragLeft | Action::DragRight => {
+        self.buflist.swap(self.focused, new_focused);
+        self.exec_arrange_buffers();
+
+        self.focused = new_focused;
+        self.exec_modelinefmt();
+      }
+    }
+  }
+
+  /// Set focused buffer.
+  fn exec_buffer(&self) {
+    println!("buffer %[{}]", self.buflist[self.focused])
+  }
+
+  /// Arrange buffers.
+  fn exec_arrange_buffers(&self) {
+    println!(
+      "arrange-buffers {}",
+      self.buflist.iter().map(|buf| format!(" %[{buf}] ")).collect::<String>()
+    );
+  }
+
+  /// Set modelinefmt.
+  pub fn exec_modelinefmt(&self) {
+    println!("set-option global modelinefmt %[ {} ]", self.modelinefmt());
   }
 }
 
@@ -65,4 +106,6 @@ impl Tabs {
 pub enum Action {
   Prev,
   Next,
+  DragLeft,
+  DragRight,
 }

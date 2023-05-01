@@ -27,11 +27,12 @@ struct Args {
 fn main() -> Result<()> {
   let args = Args::parse();
 
-  let mut tabs = Tabs::new(args.buflist, &args.focused, args.width).context("Tabs::new")?;
+  let tabs = Tabs::new(args.buflist, &args.focused, args.width).context("Tabs::new")?;
+
   if let Some(action) = args.action {
-    println!("{}", tabs.action(&action));
+    tabs.exec_action(&action);
   } else {
-    println!("set-option global modelinefmt %[ {} ]", tabs.modelinefmt());
+    tabs.exec_modelinefmt();
   }
 
   Ok(())
