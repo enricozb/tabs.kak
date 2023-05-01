@@ -1,3 +1,4 @@
+# ────────────── initialization ──────────────
 define-command -override tabs-command -params ..1 %{
   evaluate-commands %sh{
     if [ -n "$1" ]; then
@@ -15,11 +16,16 @@ define-command -override tabs-command -params ..1 %{
 hook -group kak-tabs global WinDisplay .* tabs-command
 hook -group kak-tabs global WinResize  .* tabs-command
 
+
+# ────────────── keys ──────────────
+define-command tabs-recommended-keys -docstring "set the recommended kak-tabs bindings" %{
+  map global normal q b
+  map global normal Q B
+  map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
+  map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
+}
+
 declare-user-mode tabs
-map global normal q b
-map global normal Q B
-map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
-map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
 
 # navigate
 map global tabs a "ga" -docstring "↔ alternate"
