@@ -7,7 +7,7 @@ use self::tabs::{Action, Tabs};
 
 #[derive(Parser)]
 struct Args {
-  /// Which action is being taken, if any.
+  /// Which action is being taken.
   #[arg(short, long)]
   action: Option<Action>,
 
@@ -29,10 +29,10 @@ fn main() -> Result<()> {
 
   let mut tabs = Tabs::new(args.buflist, &args.focused, args.width).context("Tabs::new")?;
   if let Some(action) = args.action {
-    tabs.action(&action);
+    println!("{}", tabs.action(&action));
+  } else {
+    println!("set-option global modelinefmt %[ {} ]", tabs.modelinefmt());
   }
-
-  println!(tabs.modelinefmt());
 
   Ok(())
 }

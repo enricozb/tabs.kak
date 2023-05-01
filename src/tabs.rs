@@ -27,10 +27,14 @@ impl Tabs {
   }
 
   /// Perform an action.
-  pub fn action(&mut self, action: &Action) {
+  pub fn action(&mut self, action: &Action) -> String {
     match action {
       Action::Prev => self.focused = self.focused.saturating_sub(1),
       Action::Next => self.focused = self.focused.saturating_add(1),
+    }
+
+    match action {
+      Action::Prev | Action::Next => format!("buffer {}", self.buflist[self.focused]),
     }
   }
 
@@ -42,14 +46,14 @@ impl Tabs {
       .enumerate()
       .map(|(i, buf)| {
         if i == self.focused {
-          format!("{{Error}}{buf}{{Default}}")
+          format!("{{Prompt}}{buf}{{Default}}")
         } else {
-          buf
+          format!("{{Default}}{buf}{{Default}}")
         }
       })
       .collect();
 
-    formatted.join("|")
+    format!("| {} |", formatted.join(" | "))
   }
 }
 
