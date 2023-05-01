@@ -71,7 +71,7 @@ impl Tabs {
     match action {
       Action::Prev | Action::Next => {
         self.focused = new_focused;
-        self.exec_buffer()
+        self.exec_buffer();
       }
       Action::DragLeft | Action::DragRight => {
         self.buflist.swap(self.focused, new_focused);
@@ -85,7 +85,7 @@ impl Tabs {
 
   /// Set focused buffer.
   fn exec_buffer(&self) {
-    println!("buffer %[{}]", self.buflist[self.focused])
+    println!("buffer %[{}]", self.buflist[self.focused]);
   }
 
   /// Arrange buffers.

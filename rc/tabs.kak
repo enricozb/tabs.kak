@@ -21,10 +21,16 @@ map global normal Q B
 map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
 map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
 
-# navigation
+# navigate
+map global tabs a "ga" -docstring "↔ alternate"
 map global tabs h ": tabs-command prev<ret>" -docstring "← prev"
 map global tabs l ": tabs-command next<ret>" -docstring "→ next"
-map global tabs H ": tabs-command drag-left<ret>" -docstring "← drag left"
-map global tabs L ": tabs-command drag-right<ret>" -docstring "→ drag right"
 map global tabs s ": edit -scratch *scratch*<ret>" -docstring "*scratch*"
 map global tabs u ": edit -debug *debug*<ret>" -docstring "*debug*"
+
+# arrange
+map global tabs H ": tabs-command drag-left<ret>" -docstring "← drag left"
+map global tabs L ": tabs-command drag-right<ret>" -docstring "→ drag right"
+
+# mutate
+map global tabs d ": delete-buffer<ret>" -docstring "delete (current)"
