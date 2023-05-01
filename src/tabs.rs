@@ -33,6 +33,10 @@ impl Tabs {
       Action::Next => self.focused = self.focused.saturating_add(1),
     }
 
+    if self.focused >= self.buflist.len() {
+      self.focused = self.buflist.len() - 1
+    }
+
     match action {
       Action::Prev | Action::Next => format!("buffer {}", self.buflist[self.focused]),
     }
