@@ -1,7 +1,10 @@
 [package]
 name = "kak-tabs"
+description = "kakoune tabs"
+license = "CC0-1.0"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/enricozb/tree-sitter.kak"
 
 [dependencies]
 anyhow = "1.0.71"
