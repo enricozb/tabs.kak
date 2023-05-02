@@ -19,7 +19,11 @@ struct Args {
   #[arg(short, long, value_name = "BUFFER")]
   focused: String,
 
-  /// The list of buflist.
+  /// The list of modified buffers.
+  #[arg(short, long, value_name = "BUFFER")]
+  modified: Vec<String>,
+
+  /// The list of buffers.
   #[arg(value_name = "BUFFER")]
   buflist: Vec<String>,
 }
@@ -27,7 +31,7 @@ struct Args {
 fn main() -> Result<()> {
   let args = Args::parse();
 
-  let tabs = Tabs::new(args.buflist, &args.focused, args.width).context("Tabs::new")?;
+  let tabs = Tabs::new(args.buflist, args.modified, &args.focused, args.width).context("Tabs::new")?;
 
   if let Some(action) = args.action {
     tabs.exec_action(&action);

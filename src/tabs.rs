@@ -1,9 +1,14 @@
+use std::collections::HashSet;
+
 use anyhow::{bail, Result};
 use clap::ValueEnum;
 
 pub struct Tabs {
   /// The list of buffers.
   buflist: Vec<String>,
+
+  /// Modified indexes.
+  modified: HashSet<String>,
 
   /// The focused buffer.
   focused: usize,
@@ -17,13 +22,14 @@ pub struct Tabs {
 /// Methods named `exec_*` print a kakoune command.
 impl Tabs {
   /// Creates a new `Tabs`.
-  pub fn new(buflist: Vec<String>, focused: &str, width: usize) -> Result<Self> {
+  pub fn new(buflist: Vec<String>, modified: Vec<String>, focused: &str, width: usize) -> Result<Self> {
     let Some(focused) = buflist.iter().position(|bufname| bufname == focused) else {
       bail!("buffer '{focused}' not in buflist");
     };
 
     Ok(Self {
       buflist,
+      modified: modified.into_iter().collect(),
       focused,
       width,
     })
@@ -50,11 +56,19 @@ impl Tabs {
       .iter()
       .enumerate()
       .map(|(i, buf)| {
-        if i == self.focused {
+        let buffer = if i == self.focused {
           format!("{{Prompt}}{buf}{{Default}}")
         } else {
           format!("{{LineNumbers}}{buf}{{Default}}")
-        }
+        };
+
+        let modified = if self.modified.contains(buf) {
+          format!("{{DiagnosticError}}*{{Default}} ")
+        } else {
+          String::new()
+        };
+
+        format!("{modified}{buffer}")
       })
       .collect();
 

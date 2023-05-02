@@ -1,20 +1,53 @@
 # ────────────── initialization ──────────────
-define-command -override tabs-command -params ..1 %{
+declare-option bool tabs_modified_buffer false
+declare-option str-list tabs_modified_buffers
+
+hook -group kak-tabs global WinDisplay .* tabs-command
+hook -group kak-tabs global WinResize  .* tabs-command
+
+hook -group kak-tabs global InsertIdle   .* tabs-set-modified
+hook -group kak-tabs global NormalIdle   .* tabs-set-modified
+hook -group kak-tabs global InsertChar   .* tabs-set-modified
+hook -group kak-tabs global InsertDelete .* tabs-set-modified
+hook -group kak-tabs global BufReload    .* tabs-set-modified
+hook -group kak-tabs global BufWritePost .* tabs-set-modified
+
+
+# ────────────── commands ──────────────
+define-command tabs-command -params ..1 %{
   evaluate-commands %sh{
     if [ -n "$1" ]; then
       action="--action $1"
     fi
 
-    eval "target/release/kak-tabs \
+    eval "kak-tabs \
       --width '$kak_window_width' \
       --focused '$kak_bufname' \
+      $kak_opt_tabs_modified_buffers \
       $action \
       $kak_quoted_buflist"
   }
 }
 
-hook -group kak-tabs global WinDisplay .* tabs-command
-hook -group kak-tabs global WinResize  .* tabs-command
+define-command tabs-set-modified %{ try %{
+  evaluate-commands %sh{
+    if [ "$kak_opt_tabs_modified_buffer" = "$kak_modified" ]; then
+      echo 'fail'
+    fi
+  }
+
+  set-option buffer tabs_modified_buffer %val{modified}
+
+  evaluate-commands %sh{
+    if [ "$kak_modified" = "true" ]; then
+      echo 'set-option -add global tabs_modified_buffers "--modified=%val{bufname}"'
+    else
+      echo 'set-option -remove global tabs_modified_buffers "--modified=%val{bufname}"'
+    fi
+  }
+
+  tabs-command
+}}
 
 
 # ────────────── keys ──────────────
