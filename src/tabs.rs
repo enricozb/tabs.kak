@@ -63,7 +63,7 @@ impl Tabs {
         };
 
         let modified = if self.modified.contains(buf) {
-          format!("{{DiagnosticError}}*{{Default}} ")
+          "{{DiagnosticError}}*{{Default}} ".to_string()
         } else {
           String::new()
         };
