@@ -6,7 +6,7 @@ use clap::Parser;
 use self::tabs::{Action, Tabs};
 
 #[derive(Parser)]
-struct Args {
+pub struct Args {
   /// Which action is being taken.
   #[arg(short, long)]
   action: Option<Action>,
@@ -35,11 +35,12 @@ struct Args {
 
 fn main() -> Result<()> {
   let args = Args::parse();
+  let action = args.action;
 
-  let tabs = Tabs::new(args.buflist, args.modified, &args.focused, args.width, args.minified).context("Tabs::new")?;
+  let tabs = Tabs::new(args).context("Tabs::new")?;
 
-  if let Some(action) = args.action {
-    tabs.exec_action(&action);
+  if let Some(action) = action {
+    tabs.exec_action(action);
   } else {
     tabs.exec_modelinefmt();
   }

@@ -3,6 +3,8 @@ use std::collections::{HashMap, HashSet};
 use anyhow::{bail, Result};
 use clap::ValueEnum;
 
+use crate::Args;
+
 pub struct Tabs {
   /// The list of buffers.
   buflist: Vec<String>,
@@ -25,17 +27,17 @@ pub struct Tabs {
 /// Methods named `exec_*` print a kakoune command.
 impl Tabs {
   /// Creates a new `Tabs`.
-  pub fn new(buflist: Vec<String>, modified: Vec<String>, focused: &str, width: usize, minified: bool) -> Result<Self> {
-    let Some(focused) = buflist.iter().position(|bufname| bufname == focused) else {
-      bail!("buffer '{focused}' not in buflist");
+  pub fn new(args: Args) -> Result<Self> {
+    let Some(focused) = args.buflist.iter().position(|bufname| bufname == &args.focused) else {
+      bail!("buffer '{}' not in buflist", &args.focused);
     };
 
     Ok(Self {
-      buflist,
-      modified: modified.into_iter().collect(),
+      buflist: args.buflist,
+      modified: args.modified.into_iter().collect(),
       focused,
-      width,
-      minified,
+      width: args.width,
+      minified: args.minified,
     })
   }
 
@@ -123,7 +125,7 @@ impl Tabs {
   }
 
   /// Perform an action.
-  pub fn exec_action(mut self, action: &Action) {
+  pub fn exec_action(mut self, action: Action) {
     let new_focused = match action {
       Action::Prev | Action::DragLeft => self.prev_focused(),
       Action::Next | Action::DragRight => self.next_focused(),
@@ -163,7 +165,7 @@ impl Tabs {
   }
 }
 
-#[derive(Clone, ValueEnum)]
+#[derive(Clone, Copy, ValueEnum)]
 pub enum Action {
   Prev,
   Next,
