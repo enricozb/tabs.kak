@@ -7,10 +7,7 @@ hook -group kak-tabs global WinResize  .* tabs-command
 
 hook -group kak-tabs global InsertIdle   .* tabs-set-modified
 hook -group kak-tabs global NormalIdle   .* tabs-set-modified
-hook -group kak-tabs global InsertChar   .* tabs-set-modified
-hook -group kak-tabs global InsertDelete .* tabs-set-modified
 hook -group kak-tabs global BufReload    .* tabs-set-modified
-hook -group kak-tabs global BufWritePost .* tabs-set-modified
 
 
 # ────────────── commands ──────────────
