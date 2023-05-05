@@ -4,7 +4,7 @@ description = "kakoune tabs"
 license = "CC0-1.0"
 version = "0.1.2"
 edition = "2021"
-repository = "https://github.com/enricozb/tree-sitter.kak"
+repository = "https://github.com/enricozb/tabs.kak"
 
 [dependencies]
 anyhow = "1.0.71"
