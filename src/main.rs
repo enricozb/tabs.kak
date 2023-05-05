@@ -28,6 +28,10 @@ pub struct Args {
   #[arg(short, long, value_name = "BUFFER")]
   modified: Vec<String>,
 
+  /// A modelinefmt to precede the tabs.
+  #[arg(long)]
+  modelinefmt: Option<String>,
+
   /// The list of buffers.
   #[arg(value_name = "BUFFER")]
   buflist: Vec<String>,

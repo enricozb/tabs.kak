@@ -20,6 +20,9 @@ pub struct Tabs {
 
   /// Whether to minify the output tab names.
   minified: bool,
+
+  /// A modelinefmt to precede the tabs.
+  modelinefmt: Option<String>,
 }
 
 /// `Tabs` methods.
@@ -38,6 +41,7 @@ impl Tabs {
       focused,
       width: args.width,
       minified: args.minified,
+      modelinefmt: args.modelinefmt,
     })
   }
 
@@ -121,7 +125,7 @@ impl Tabs {
       })
       .collect();
 
-    format!("| {} |", formatted.join(" | "))
+    format!("{}| {} |", self.modelinefmt.unwrap_or_default(), formatted.join(" | "))
   }
 
   /// Perform an action.

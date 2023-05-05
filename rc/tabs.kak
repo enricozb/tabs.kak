@@ -1,6 +1,7 @@
 # ────────────── initialization ──────────────
 declare-option bool tabs_modified_buffer false
 declare-option str-list tabs_modified_buffers
+declare-option str tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} '
 declare-option str-list tabs_options
 
 hook -group kak-tabs global WinDisplay .* tabs-command
@@ -21,6 +22,7 @@ define-command tabs-command -params ..1 %{
     eval "kak-tabs \
       --width '$kak_window_width' \
       --focused '$kak_bufname' \
+      --modelinefmt '$kak_opt_tabs_modelinefmt' \
       $kak_opt_tabs_options \
       $kak_opt_tabs_modified_buffers \
       $action \
