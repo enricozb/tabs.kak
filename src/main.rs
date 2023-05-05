@@ -11,6 +11,11 @@ struct Args {
   #[arg(short, long)]
   action: Option<Action>,
 
+  /// Output tab names to be as small as possible while still being
+  /// unique and valid relative paths of some ancestor.
+  #[arg(long)]
+  minified: bool,
+
   /// Terminal width.
   #[arg(short, long)]
   width: usize,
@@ -31,7 +36,7 @@ struct Args {
 fn main() -> Result<()> {
   let args = Args::parse();
 
-  let tabs = Tabs::new(args.buflist, args.modified, &args.focused, args.width).context("Tabs::new")?;
+  let tabs = Tabs::new(args.buflist, args.modified, &args.focused, args.width, args.minified).context("Tabs::new")?;
 
   if let Some(action) = args.action {
     tabs.exec_action(&action);

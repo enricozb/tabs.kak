@@ -1,6 +1,7 @@
 # ────────────── initialization ──────────────
 declare-option bool tabs_modified_buffer false
 declare-option str-list tabs_modified_buffers
+declare-option str-list tabs_options
 
 hook -group kak-tabs global WinDisplay .* tabs-command
 hook -group kak-tabs global WinResize  .* tabs-command
@@ -20,6 +21,7 @@ define-command tabs-command -params ..1 %{
     eval "kak-tabs \
       --width '$kak_window_width' \
       --focused '$kak_bufname' \
+      $kak_opt_tabs_options \
       $kak_opt_tabs_modified_buffers \
       $action \
       $kak_quoted_buflist"
