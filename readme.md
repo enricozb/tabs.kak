@@ -53,6 +53,7 @@ set-option global tabs_options --minified
 
 ## TODO
 - tabs should shrink when there's not enough space
+- add more buffer deletion options, see: <https://github.com/enricozb/tabs.kak/issues/3>
 
 <hr>
 
