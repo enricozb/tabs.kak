@@ -1,8 +1,9 @@
 # ────────────── initialization ──────────────
-declare-option bool tabs_modified_buffer false
-declare-option str-list tabs_modified_buffers
-declare-option str tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} '
+declare-option str tabs_modelinefmt
 declare-option str-list tabs_options
+
+declare-option -hidden bool tabs_modified_buffer false
+declare-option -hidden str-list tabs_modified_buffers
 
 hook -group kak-tabs global WinDisplay .* tabs-command
 hook -group kak-tabs global WinResize  .* tabs-command

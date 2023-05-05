@@ -10,7 +10,7 @@ pub struct Tabs {
   buflist: Vec<String>,
 
   /// Modified indexes.
-  modified: HashSet<String>,
+  modified: HashSet<usize>,
 
   /// The focused buffer.
   focused: usize,
@@ -31,13 +31,21 @@ pub struct Tabs {
 impl Tabs {
   /// Creates a new `Tabs`.
   pub fn new(args: Args) -> Result<Self> {
+    let modified: HashSet<String> = args.modified.into_iter().collect();
+    let modified: HashSet<usize> = args
+      .buflist
+      .iter()
+      .enumerate()
+      .filter_map(|(i, buf)| if modified.contains(buf) { Some(i) } else { None })
+      .collect();
+
     let Some(focused) = args.buflist.iter().position(|bufname| bufname == &args.focused) else {
       bail!("buffer '{}' not in buflist", &args.focused);
     };
 
     Ok(Self {
       buflist: args.buflist,
-      modified: args.modified.into_iter().collect(),
+      modified,
       focused,
       width: args.width,
       minified: args.minified,
@@ -115,7 +123,7 @@ impl Tabs {
           format!("{{LineNumbers}}{buf}{{Default}}")
         };
 
-        let modified = if self.modified.contains(buf) {
+        let modified = if self.modified.contains(&i) {
           "{DiagnosticError}*{Default} ".to_string()
         } else {
           String::new()
