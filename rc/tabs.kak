@@ -51,6 +51,21 @@ define-command tabs-set-modified %{ try %{
   tabs-command
 }}
 
+define-command tabs-only-focused -docstring "keep only the focused buffer" %{
+  evaluate-commands %sh{
+    eval "set -- $kak_quoted_buflist"
+    while [ "$1" ]; do
+      if [ "$1" != "$kak_bufname" ]; then
+        echo "try %{ delete-buffer %[$1] }"
+      fi
+      shift
+    done
+
+    echo "echo -markup '{Information}deleted unmodified buffers'"
+  }
+
+  tabs-command
+}
 
 # ────────────── keys ──────────────
 define-command tabs-recommended-keys -docstring "set the recommended kak-tabs bindings" %{
@@ -80,4 +95,5 @@ map global tabs K ": tabs-command drag-first<ret>" -docstring "⇑ drag first"
 map global tabs J ": tabs-command drag-last<ret>" -docstring "⇓ drag last"
 
 # mutate
-map global tabs d ": delete-buffer<ret>" -docstring "delete (current)"
+map global tabs d ": delete-buffer<ret>" -docstring "delete (focused)"
+map global tabs o ": tabs-only-focused<ret>" -docstring "keep only (focused)"
