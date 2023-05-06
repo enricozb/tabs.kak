@@ -66,12 +66,18 @@ declare-user-mode tabs
 map global tabs a "ga" -docstring "↔ alternate"
 map global tabs h ": tabs-command prev<ret>" -docstring "← prev"
 map global tabs l ": tabs-command next<ret>" -docstring "→ next"
+map global tabs k ": tabs-command first<ret>" -docstring "↑ first"
+map global tabs j ": tabs-command last<ret>" -docstring "↓ last"
+
+map global tabs f ": buffer " -docstring "¤ find"
 map global tabs s ": edit -scratch *scratch*<ret>" -docstring "*scratch*"
 map global tabs u ": edit -debug *debug*<ret>" -docstring "*debug*"
 
 # arrange
-map global tabs H ": tabs-command drag-left<ret>" -docstring "← drag left"
-map global tabs L ": tabs-command drag-right<ret>" -docstring "→ drag right"
+map global tabs H ": tabs-command drag-left<ret>" -docstring "⇐ drag left"
+map global tabs L ": tabs-command drag-right<ret>" -docstring "⇒ drag right"
+map global tabs K ": tabs-command drag-first<ret>" -docstring "⇑ drag first"
+map global tabs J ": tabs-command drag-last<ret>" -docstring "⇓ drag last"
 
 # mutate
 map global tabs d ": delete-buffer<ret>" -docstring "delete (current)"

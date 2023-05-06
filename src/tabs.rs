@@ -105,20 +105,43 @@ impl Tabs {
     )
   }
 
+  /// Swap modified indices if necessary.
+  fn swap_modified(&mut self, old_focused: usize, new_focused: usize) {
+    match (
+      self.modified.contains(&old_focused),
+      self.modified.contains(&new_focused),
+    ) {
+      (true, false) => {
+        self.modified.remove(&old_focused);
+        self.modified.insert(new_focused);
+      }
+
+      (false, true) => {
+        self.modified.insert(old_focused);
+        self.modified.remove(&new_focused);
+      }
+
+      _ => (),
+    }
+  }
+
   /// Perform an action.
   pub fn exec_action(mut self, action: Action) {
     let new_focused = match action {
       Action::Prev | Action::DragLeft => self.prev_focused(),
       Action::Next | Action::DragRight => self.next_focused(),
+      Action::First | Action::DragFirst => 0,
+      Action::Last | Action::DragLast => self.buflist.len() - 1,
     };
 
     match action {
-      Action::Prev | Action::Next => {
+      Action::Prev | Action::Next | Action::First | Action::Last => {
         self.focused = new_focused;
         self.exec_buffer();
       }
-      Action::DragLeft | Action::DragRight => {
+      Action::DragLeft | Action::DragRight | Action::DragFirst | Action::DragLast => {
         self.buflist.swap(self.focused, new_focused);
+        self.swap_modified(self.focused, new_focused);
         self.exec_arrange_buffers();
 
         self.focused = new_focused;
@@ -150,6 +173,10 @@ impl Tabs {
 pub enum Action {
   Prev,
   Next,
+  First,
+  Last,
   DragLeft,
   DragRight,
+  DragFirst,
+  DragLast,
 }
