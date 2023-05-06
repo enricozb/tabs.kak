@@ -1,9 +1,9 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use anyhow::{bail, Result};
 use clap::ValueEnum;
 
-use crate::Args;
+use crate::{utils, Args};
 
 pub struct Tabs {
   /// The list of buffers.
@@ -53,12 +53,12 @@ impl Tabs {
     })
   }
 
-  /// Index of buffer before focused.
+  /// Index of buffer preceding the focused one.
   pub fn prev_focused(&self) -> usize {
     self.focused.saturating_sub(1)
   }
 
-  /// Index of buffer after focused.
+  /// Index of buffer following the focused one.
   pub fn next_focused(&self) -> usize {
     if self.focused < self.buflist.len() - 1 {
       self.focused + 1
@@ -67,50 +67,15 @@ impl Tabs {
     }
   }
 
-  /// Returns a minified buflist.
-  ///
-  /// Specifically, returns the vector of smallest unique suffixes of buflist.
-  fn minified_buflist(&self) -> Vec<String> {
-    let mut paths = HashMap::<String, (Vec<&str>, usize)>::new();
-    let mut minified = Vec::new();
-
-    for bufname in &self.buflist {
-      let mut parts = bufname.split('/').collect::<Vec<_>>();
-      let mut candidate = parts.pop().unwrap().to_string();
-
-      if let Some((mut other_parts, index)) = paths.remove(&candidate) {
-        let mut other_candidate = candidate.clone();
-        while candidate == other_candidate {
-          assert!(!parts.is_empty() || !other_parts.is_empty(), "identical buffers");
-
-          if let Some(parent) = parts.pop() {
-            candidate = [parent, &candidate].join("/");
-          }
-          if let Some(parent) = other_parts.pop() {
-            other_candidate = [parent, &other_candidate].join("/");
-          }
-        }
-
-        // replace previously conflicting candidate path
-        minified[index] = other_candidate.clone();
-
-        paths.insert(other_candidate, (other_parts, index));
-      } else {
-      }
-
-      paths.insert(candidate.clone(), (parts, minified.len()));
-      minified.push(candidate);
-    }
-
-    minified
-  }
-
   /// Convert to a modelinefmt.
-  pub fn modelinefmt(self) -> String {
+  pub fn modelinefmt(&self) -> String {
+    let minified_buflist: Vec<String>;
+
     let buflist = if self.minified {
-      self.minified_buflist()
+      minified_buflist = utils::minified_buflist(&self.buflist);
+      &minified_buflist
     } else {
-      self.buflist
+      &self.buflist
     };
 
     let formatted: Vec<_> = buflist
@@ -118,13 +83,13 @@ impl Tabs {
       .enumerate()
       .map(|(i, buf)| {
         let buffer = if i == self.focused {
-          format!("{{Prompt}}{buf}{{Default}}")
+          format!(" {{Prompt}}{buf}{{Default}} ")
         } else {
-          format!("{{LineNumbers}}{buf}{{Default}}")
+          format!(" {{LineNumbers}}{buf}{{Default}} ")
         };
 
         let modified = if self.modified.contains(&i) {
-          "{DiagnosticError}*{Default} ".to_string()
+          " {DiagnosticError}*{Default}".to_string()
         } else {
           String::new()
         };
@@ -133,7 +98,11 @@ impl Tabs {
       })
       .collect();
 
-    format!("{}| {} |", self.modelinefmt.unwrap_or_default(), formatted.join(" | "))
+    format!(
+      "{}|{}|",
+      self.modelinefmt.as_deref().unwrap_or_default(),
+      formatted.join("|")
+    )
   }
 
   /// Perform an action.
