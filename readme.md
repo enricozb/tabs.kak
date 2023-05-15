@@ -53,7 +53,7 @@ set-option global tabs_options --minified
 
 ## Installation
 1. Install the [`rc/tabs.kak`](./rc/tabs.kak) so your kakoune instance auto-loads it.
-2. Install the [tabs.kak](https://crates.io/crates/kak-tabs) rust crate.
+2. Install the [kak-tabs](https://crates.io/crates/kak-tabs) rust crate.
 
 ## TODO
 - tabs should shrink when there's not enough space
