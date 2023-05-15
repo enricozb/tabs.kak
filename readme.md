@@ -51,6 +51,10 @@ set-option global tabs_options --minified
       ```
       because these are the smallest unique suffixes of each buffer.
 
+## Installation
+1. Install the [`rc/tabs.kak`](./rc/tabs.kak) so your kakoune instance auto-loads it.
+2. Install the [tabs.kak](https://crates.io/crates/kak-tabs) rust crate.
+
 ## TODO
 - tabs should shrink when there's not enough space
 - add more buffer deletion options, see: <https://github.com/enricozb/tabs.kak/issues/3>
