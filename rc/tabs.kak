@@ -8,9 +8,9 @@ declare-option -hidden str-list tabs_modified_buffers
 hook -group kak-tabs global WinDisplay .* tabs-command
 hook -group kak-tabs global WinResize  .* tabs-command
 
-hook -group kak-tabs global InsertIdle   .* tabs-set-modified
-hook -group kak-tabs global NormalIdle   .* tabs-set-modified
-hook -group kak-tabs global BufReload    .* tabs-set-modified
+hook -group kak-tabs global InsertIdle .* tabs-set-modified
+hook -group kak-tabs global NormalIdle .* tabs-set-modified
+hook -group kak-tabs global BufReload  .* tabs-set-modified
 
 
 # ────────────── commands ──────────────

@@ -165,7 +165,7 @@ impl Tabs {
 
   /// Set modelinefmt.
   pub fn exec_modelinefmt(self) {
-    println!("set-option global modelinefmt %[ {} ]", self.modelinefmt());
+    println!("set-option buffer modelinefmt %[ {} ]", self.modelinefmt());
   }
 }
 
