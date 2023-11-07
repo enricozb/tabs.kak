@@ -55,7 +55,11 @@ impl Tabs {
 
   /// Index of buffer preceding the focused one.
   pub fn prev_focused(&self) -> usize {
-    self.focused.saturating_sub(1)
+    if self.focused == 0 {
+      self.buflist.len() - 1
+    } else {
+      self.focused - 1
+    } 
   }
 
   /// Index of buffer following the focused one.
@@ -63,7 +67,7 @@ impl Tabs {
     if self.focused < self.buflist.len() - 1 {
       self.focused + 1
     } else {
-      self.focused
+      0
     }
   }
 
