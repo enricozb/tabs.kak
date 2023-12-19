@@ -56,6 +56,11 @@ set-option global tabs_options --minified
 2. Install the [kak-tabs](https://crates.io/crates/kak-tabs) rust crate.
 
 ## TODO
+- the order of tabs changes how the disambiguation of files with the same names work. for example:
+  - we have a buflist that looks like:
+    - `| *debug* | xml.rs | pypi/mirror/mod.rs | cargo/mirror/mod.rs | mod.rs |`
+  - swapping the last two buffers yields the following tabs:
+    - `| *debug* | xml.rs | mirror/mod.rs | api/mod.rs | mod.rs |`
 - tabs should shrink when there's not enough space
 - add more buffer deletion options, see: <https://github.com/enricozb/tabs.kak/issues/3>
 
