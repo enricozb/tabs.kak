@@ -59,7 +59,7 @@ impl Tabs {
       self.buflist.len() - 1
     } else {
       self.focused - 1
-    } 
+    }
   }
 
   /// Index of buffer following the focused one.
