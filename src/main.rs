@@ -1,54 +1,60 @@
 mod tabs;
-mod utils;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
 
-use self::tabs::{Action, Tabs};
+use self::tabs::Action;
 
 #[derive(Parser)]
-pub struct Args {
+struct Args {
   /// Which action is being taken.
-  #[arg(short, long)]
   action: Option<Action>,
 
-  /// Output tab names to be as small as possible while still being
-  /// unique and valid relative paths of some ancestor.
-  #[arg(long)]
-  minified: bool,
+  #[command(flatten)]
+  kakoune: Kakoune,
 
-  /// Terminal width.
-  #[arg(short, long)]
+  #[command(flatten)]
+  buffers: Buffers,
+
+  #[command(flatten)]
+  render: Render,
+}
+
+#[derive(clap::Args)]
+struct Kakoune {
+  #[arg(long)]
+  session: String,
+
+  #[arg(long)]
+  client: String,
+}
+
+#[derive(clap::Args)]
+struct Buffers {
+  #[arg(long)]
+  bufname: String,
+
+  #[arg(long, value_delimiter = ' ')]
+  session_buflist: Vec<String>,
+
+  #[arg(long, value_delimiter = ' ')]
+  session_buflist_prev: Vec<String>,
+
+  #[arg(long, value_delimiter = ' ')]
+  client_bufindices: Vec<String>,
+}
+
+#[derive(clap::Args)]
+struct Render {
+  #[arg(long)]
   width: usize,
 
-  /// The focused buffer. This must be present in BUFFERS
-  #[arg(short, long, value_name = "BUFFER")]
-  focused: String,
-
-  /// The list of modified buffers.
-  #[arg(short, long, value_name = "BUFFER")]
-  modified: Vec<String>,
-
-  /// A modelinefmt to precede the tabs.
   #[arg(long)]
   modelinefmt: Option<String>,
-
-  /// The list of buffers.
-  #[arg(value_name = "BUFFER")]
-  buflist: Vec<String>,
 }
 
 fn main() -> Result<()> {
   let args = Args::parse();
-  let action = args.action;
-
-  let tabs = Tabs::new(args).context("Tabs::new")?;
-
-  if let Some(action) = action {
-    tabs.exec_action(action);
-  } else {
-    tabs.exec_modelinefmt();
-  }
 
   Ok(())
 }
