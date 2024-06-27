@@ -1,9 +1,13 @@
+use std::str::FromStr;
+
+use anyhow::Result;
 use clap::Parser;
 
-use crate::{buffers::ClientBuflists, tabs::Action};
+use crate::{buffers::ClientBuflists, tabs::Navigation};
 
 #[derive(Parser)]
 pub struct Args {
+  #[clap(value_parser = clap::value_parser!(Action))]
   pub action: Option<Action>,
 
   #[command(flatten)]
@@ -47,4 +51,20 @@ pub struct Modeline {
 
   #[arg(long)]
   pub modelinefmt: Option<String>,
+}
+
+#[derive(Clone, Copy)]
+pub enum Action {
+  Navigation(Navigation),
+  Close,
+}
+
+impl FromStr for Action {
+  type Err = anyhow::Error;
+  fn from_str(s: &str) -> Result<Self> {
+    match s {
+      "close" => Ok(Self::Close),
+      _ => Navigation::from_str(s).map(Self::Navigation),
+    }
+  }
 }

@@ -1,82 +1,104 @@
-use clap::ValueEnum;
+use std::str::FromStr;
+
+use anyhow::Result;
 
 use crate::buffers::Modified;
 
 pub struct Tabs {
+  pub focused: usize,
   pub buffers: Vec<Buffer>,
 }
 
 impl Tabs {
   pub fn new<'a>(buflist: impl IntoIterator<Item = &'a String>, modified: &Modified, focused_bufname: String) -> Self {
-    let mut focused_in_buflist = false;
+    let mut focused = None;
     let mut buffers = Vec::new();
 
-    for buffer in buflist {
-      let focused = if buffer == &focused_bufname {
-        focused_in_buflist = true;
-        true
-      } else {
-        false
+    for (i, buffer) in buflist.into_iter().enumerate() {
+      if buffer == &focused_bufname {
+        focused = Some(i);
       };
 
       buffers.push(Buffer {
         name: buffer.to_string(),
         modified: modified[buffer],
-        focused,
         hidden: false,
       });
     }
 
-    if focused_in_buflist {
-      Self { buffers }
+    if let Some(focused) = focused {
+      Self { focused, buffers }
     } else {
       buffers.push(Buffer {
         modified: modified[&focused_bufname],
         name: focused_bufname,
-        focused: true,
         hidden: true,
       });
 
-      Self { buffers }
+      Self {
+        focused: buffers.len() - 1,
+        buffers,
+      }
     }
   }
 
   pub fn render(self) -> String {
-    let mut parts = Vec::new();
+    let mut string = String::from("|");
 
-    for buffer in self.buffers {
-      let mut tags = String::new();
+    for (i, buffer) in self.buffers.into_iter().enumerate() {
+      let focused = self.focused == i;
+
+      if buffer.hidden && !focused {
+        continue;
+      }
 
       if buffer.modified {
-        tags.push('m');
-      }
-      if buffer.focused {
-        tags.push('f');
-      }
-      if buffer.hidden {
-        tags.push('h');
+        string.push_str(" {red}*");
       }
 
-      if tags.is_empty() {
-        parts.push(buffer.name);
+      if buffer.hidden {
+        string.push_str(" {yellow}");
+      } else if focused {
+        string.push_str(" {Prompt}");
       } else {
-        parts.push(format!("({tags}) {}", buffer.name));
+        string.push_str(" {LineNumbers}");
       }
+
+      string.push_str(&buffer.name);
+      string.push_str("{Default} |");
     }
 
-    parts.join(" | ")
+    string
   }
+
+  // pub fn navigate(&mut self, navigation: Navigation) -> &str {}
 }
 
 pub struct Buffer {
   pub name: String,
   pub modified: bool,
-  pub focused: bool,
   pub hidden: bool,
 }
 
-#[derive(Clone, Copy, ValueEnum)]
-pub enum Action {
-  Create,
-  Close,
+#[derive(Clone, Copy)]
+pub enum Navigation {
+  First,
+  Next,
+  Prev,
+  Last,
+}
+
+impl FromStr for Navigation {
+  type Err = anyhow::Error;
+
+  fn from_str(s: &str) -> Result<Self> {
+    match s {
+      "first" => Ok(Self::First),
+      "next" => Ok(Self::Next),
+      "prev" => Ok(Self::Prev),
+      "last" => Ok(Self::Last),
+
+      _ => anyhow::bail!("unknown navigation {s:?}"),
+    }
+  }
 }

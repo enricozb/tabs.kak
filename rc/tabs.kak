@@ -8,7 +8,7 @@ declare-option -docstring "format string to render alongside tabs" str tabs_mode
 
 
 # ────────────── hooks ──────────────
-hook -group kak-tabs global ClientCreate .* "tabs create"
+hook -group kak-tabs global ClientCreate .* tabs
 hook -group kak-tabs global ClientClose .* "tabs close"
 # TODO: ClientRename
 
@@ -42,6 +42,35 @@ define-command -override tabs-render -params ..1 %{
   }
 }
 
+define-command tabs-recommended-mapping %{
+  map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
+  map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
+}
+
+
+# ────────────── mode ──────────────
+declare-user-mode tabs
+
+# navigate
+map global tabs a "ga" -docstring "↔ alternate"
+map global tabs h ": tabs prev<ret>" -docstring "← prev"
+map global tabs l ": tabs next<ret>" -docstring "→ next"
+map global tabs k ": tabs first<ret>" -docstring "↑ first"
+map global tabs j ": tabs last<ret>" -docstring "↓ last"
+
+map global tabs s ": edit -scratch *scratch*<ret>" -docstring "*scratch*"
+map global tabs u ": edit -debug *debug*<ret>" -docstring "*debug*"
+
+# arrange
+map global tabs H ": tabs drag-left<ret>" -docstring "⇐ drag left"
+map global tabs L ": tabs drag-right<ret>" -docstring "⇒ drag right"
+map global tabs K ": tabs drag-first<ret>" -docstring "⇑ drag first"
+map global tabs J ": tabs drag-last<ret>" -docstring "⇓ drag last"
+
+# mutate
+map global tabs d ": delete-buffer<ret>" -docstring "delete (focused)"
+map global tabs o ": tabs keep-focused<ret>" -docstring "keep only (focused)"
+
 
 # ────────────── state ──────────────
 declare-option -hidden str-list tabs_buflist
@@ -60,3 +89,6 @@ define-command -override tabs-update-buflist-modified %{
     done
   }
 }
+
+set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} {blue}%val{client}{Default}.{green}%val{session}{Default} '
+tabs-recommended-mapping

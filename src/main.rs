@@ -6,9 +6,13 @@ mod tabs;
 
 use anyhow::Result;
 use clap::Parser;
-use tabs::Action;
 
-use self::{args::Args, buffers::Modified, kakoune::Kakoune, tabs::Tabs};
+use self::{
+  args::{Action, Args},
+  buffers::Modified,
+  kakoune::Kakoune,
+  tabs::Tabs,
+};
 
 fn main() -> Result<()> {
   let Args {
@@ -40,6 +44,16 @@ fn main() -> Result<()> {
     &session_buflist,
     buffers.bufname,
   );
+
+  if let Some(action) = action {
+    match action {
+      Action::Close => {
+        buffers.client_buflists.remove(&kakoune.client);
+      }
+      // Action::First | Action::Next | Action::Prev | Action::Last => tabs.navigate(action),
+      _ => (),
+    }
+  }
 
   println!("set-option window modelinefmt %§{}§", tabs.render());
   println!("set-option global tabs_client_buflists %§{}§", buffers.client_buflists);
