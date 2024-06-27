@@ -8,4 +8,9 @@ repository = "https://github.com/enricozb/tabs.kak"
 
 [dependencies]
 anyhow = "1.0.86"
+base64 = "0.22.1"
 clap = { version = "4.5.7", features = ["derive"] }
+derive_more = "0.99.18"
+extend = "1.2.0"
+serde = "1.0.203"
+serde_json = "1.0.118"
