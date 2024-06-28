@@ -5,22 +5,19 @@ use derive_more::{Deref, DerefMut};
 
 use crate::ext::StrExtend;
 
-#[derive(Deref, DerefMut)]
+#[derive(Clone, Debug, Default, Deref, DerefMut)]
 pub struct Modified(HashMap<String, bool>);
 
-impl Modified {
-  pub fn new(buflist: &[String]) -> Result<Self> {
-    let mut modified = HashMap::new();
-
-    for buf in buflist {
-      let parts = buf.rsplitn(2, '=').collect::<Vec<_>>();
-
-      modified.insert(parts[1].to_string(), parts[0].parse()?);
-    }
-
-    Ok(Self(modified))
+impl<I> From<I> for Modified
+where
+  I: IntoIterator<Item = (String, bool)>,
+{
+  fn from(value: I) -> Self {
+    Self(value.into_iter().collect())
   }
+}
 
+impl Modified {
   pub fn modified_or_deleted(&self, prev: &Self) -> bool {
     for (buffer, modified) in prev.iter() {
       if !self.contains_key(buffer) || self[buffer] != *modified {

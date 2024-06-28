@@ -1,5 +1,6 @@
 use crate::args::Kakoune as Options;
 
+#[derive(Debug)]
 pub struct Kakoune {
   pub session: String,
   pub client: String,

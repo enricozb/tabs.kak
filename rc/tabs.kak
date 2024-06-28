@@ -12,8 +12,18 @@ declare-option -docstring "options to kak-tabs
 
 # ────────────── hooks ──────────────
 # NOTE: WinResize cannot be used as %val{client} is the empty string.
-hook -group kak-tabs global ClientCreate .* "tabs create"
+# hook -group kak-tabs global ClientCreate .* "tabs create"
+hook -group kak-tabs global ClientClose .* %{
+  tabs close
+
+  rename-client garbage
+}
 hook -group kak-tabs global WinDisplay .* "tabs display"
+# hook -group kak-tabs global WinCreate .* %{
+#   echo -debug "WinCreate param=%val{hook_param} bufname=%val{bufname}"
+#   tabs win-create
+# }
+
 
 hook -group kak-tabs global InsertIdle .* tabs-on-modified
 hook -group kak-tabs global NormalIdle .* tabs-on-modified
