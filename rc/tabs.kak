@@ -38,7 +38,7 @@ define-command -override tabs -params ..1 %{
 
 define-command -override tabs-render -params ..1 %{
   evaluate-commands %sh{
-    eval "target/release/kak-tabs $1 \
+    eval "kak-tabs $1 \
       --session $kak_quoted_session \
       --client $kak_quoted_client \
       --bufname $kak_quoted_bufname \
@@ -55,6 +55,7 @@ define-command -override tabs-render -params ..1 %{
 define-command tabs-recommended-mapping %{
   map global normal b ': enter-user-mode tabs<ret>' -docstring 'tabs'
   map global normal B ': enter-user-mode -lock tabs<ret>' -docstring 'tabs (lock)'
+  map global normal <backspace> ': tabs delete<ret>'
 }
 
 
@@ -110,17 +111,3 @@ define-command -override tabs-update-buflist-modified %{
     done
   }
 }
-
-# ------ testing ------
-
-hook global ClientCreate .* %{
-  set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} {blue}%val{client}{Default}.{green}%val{session}{Default} '
-  tabs-recommended-mapping
-}
-
-set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} {blue}%val{client}{Default}.{green}%val{session}{Default} '
-tabs-recommended-mapping
-
-map global normal <backspace> ': tabs delete<ret>'
-
-set-option global tabs_options --debug

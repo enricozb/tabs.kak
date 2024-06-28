@@ -2,7 +2,7 @@
 
 pkgs.rustPlatform.buildRustPackage rec {
   pname = "kak-tabs";
-  version = "0.2.0.beta";
+  version = "0.2.1.beta";
   src = ./.;
 
   cargoLock = { lockFile = ./Cargo.lock; };
