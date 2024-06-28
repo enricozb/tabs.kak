@@ -98,18 +98,17 @@ fn main() -> Result<()> {
     }
   }
 
-  let tabs = Tabs::new(client_buflist, &session_buflist);
+  let tabs = Tabs::new(client_buflist, &session_buflist).render();
+  let modeline = modeline.modelinefmt.unwrap_or_default();
 
-  println!(
-    "set-option window modelinefmt %§{}{}§",
-    modeline.modelinefmt.unwrap_or_default(),
-    tabs.render()
-  );
+  println!("set-option window modelinefmt %§{modeline}{tabs}§",);
   println!("set-option global tabs_client_buflists %§{}§", buffers.client_buflists);
 
   if session_buflist.modified_or_deleted(&session_buflist_prev) {
     for client in buffers.client_buflists.keys() {
-      println!("try %{{ evaluate-commands -client %§{client}§ 'tabs broadcast' }}");
+      if client != &kakoune.client {
+        println!("try %{{ evaluate-commands -client %§{client}§ 'tabs broadcast' }}");
+      }
     }
   }
 
