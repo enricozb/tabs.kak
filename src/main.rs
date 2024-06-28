@@ -14,7 +14,7 @@ use self::{
   tabs::Tabs,
 };
 
-fn handle_action<'a>(action: Action, client_buflist: &mut Buflist<'a>, bufname: &str) -> Result<()> {
+fn handle_action(action: &Action, client_buflist: &mut Buflist, bufname: &str) {
   match action {
     // As of kakoune v2024.05.18, the behavior of ClientCreate and WinDisplay is a strange.
     //
@@ -44,18 +44,16 @@ fn handle_action<'a>(action: Action, client_buflist: &mut Buflist<'a>, bufname: 
     }
 
     Action::Navigation(navigation) => {
-      let focused = client_buflist.navigate(navigation);
+      let focused = client_buflist.navigate(*navigation);
       if focused != bufname {
         println!("evaluate-commands -no-hooks %{{ buffer %§{focused}§ }}");
       }
     }
 
-    Action::Drag(drag) => client_buflist.drag(drag),
+    Action::Drag(drag) => client_buflist.drag(*drag),
 
-    _ => (),
+    Action::Other(_) => (),
   }
-
-  Ok(())
 }
 
 #[extend::ext]
@@ -68,9 +66,7 @@ impl Kakoune {
     should_broadcast: bool,
   ) -> Result<()> {
     println!("set-option window modelinefmt %§{modeline}{tabs}§",);
-    println!("set-option global tabs_client_buflists %§{}§", client_buflists);
-
-    eprintln!("(after) {client_buflists:#?}");
+    println!("set-option global tabs_client_buflists %§{client_buflists}§");
 
     if should_broadcast {
       for client in client_buflists.keys() {
@@ -98,17 +94,16 @@ fn main() -> Result<()> {
   client_buflists.retain_session_buflist(&session_buflist);
 
   if debug {
-    eprintln!("(before) action: {action:#?}");
-    eprintln!("(before) kakoune: {kakoune:#?}");
-    eprintln!("(before) bufname: {bufname:#?}");
-    eprintln!("(before) client_buflists: {client_buflists:#?}");
-    eprintln!("(before) modeline: {modeline:#?}");
+    eprintln!("action: {action:#?}");
+    eprintln!("kakoune: {kakoune:#?}");
+    eprintln!("bufname: {bufname:#?}");
+    eprintln!("client_buflists: {client_buflists:#?}");
   }
 
   let mut client_buflist = client_buflists.buflist(kakoune.client.clone(), &bufname);
 
   if let Some(action) = action {
-    handle_action(action, &mut client_buflist, &bufname)?;
+    handle_action(&action, &mut client_buflist, &bufname);
   }
 
   let tabs = Tabs::new(client_buflist, &session_buflist).render();

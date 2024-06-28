@@ -135,9 +135,8 @@ impl<'a> Buflist<'a> {
 
   pub fn delete(&mut self) -> Option<&str> {
     match (self.buflist.len(), &self.focused) {
-      (0, Focused::Hidden(_)) => None,
+      (0, Focused::Hidden(_)) | (1, Focused::Index(_)) => None,
       (_, Focused::Hidden(_)) => Some(self.navigate(Navigation::Prev)),
-      (1, Focused::Index(_)) => None,
       (_, Focused::Index(index)) => {
         let new_index = std::cmp::min(*index, self.buflist.len() - 2);
         self.buflist.remove(*index);

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use anyhow::Result;
-use clap::{ArgAction, Parser};
+use clap::Parser;
 
 use crate::buffers::{ClientBuflists, Drag, Modified, Navigation};
 
