@@ -15,22 +15,23 @@ use self::{
 };
 
 fn handle_action(action: &Action, client_buflist: &mut Buflist, bufname: &str) {
+  // As of kakoune v2024.05.18, the behavior of ClientCreate and WinDisplay is a strange.
+  //
+  // When a client is created the order of the ClientCreate and WinDisplay hooks seems
+  // to vary between two possible orders. The first is:
+  //   - WinDisplay <random buffer X>
+  //   - ClientCreate <random buffer X>
+  //   - WinDisplay <correct buffer Y>
+  //
+  // The second is:
+  //   - WinDisplay <correct buffer Y>
+  //   - ClientCreate <correct buffer Y>
+  //
+  // I couldn't find any register or value that could be read to distinguish between these
+  // two scenarios, so kakoune clients should be started with `-e 'tabs only'`, which will
+  // run after both of these possible hook firings.
+
   match action {
-    // As of kakoune v2024.05.18, the behavior of ClientCreate and WinDisplay is a strange.
-    //
-    // When a client is created the order of the ClientCreate and WinDisplay hooks seems
-    // to vary between two possible orders. The first is:
-    //   - WinDisplay <random buffer X>
-    //   - ClientCreate <random buffer X>
-    //   - WinDisplay <correct buffer Y>
-    //
-    // The second is:
-    //   - WinDisplay <correct buffer Y>
-    //   - ClientCreate <correct buffer Y>
-    //
-    // I couldn't find any register or value that could be read to distinguish between these
-    // two scenarios, so kakoune clients should be started with `-e 'tabs only'`, which will
-    // run after both of these possible hook firings.
     Action::Close => client_buflist.clear(),
 
     Action::Only => client_buflist.clear_unfocused(),
