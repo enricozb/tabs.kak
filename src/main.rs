@@ -20,48 +20,62 @@ fn main() -> Result<()> {
     kakoune,
     mut buffers,
     modeline,
+    debug,
   } = Args::parse();
+
+  if debug {
+    eprintln!("action: {action:#?}");
+    eprintln!("kakoune: {kakoune:#?}");
+    eprintln!("buffers: {buffers:#?}");
+    eprintln!("modeline: {modeline:#?}");
+  }
 
   let kakoune = Kakoune::new(kakoune);
 
   let session_buflist_prev = Modified::new(&buffers.session_buflist_prev)?;
   let session_buflist = Modified::new(&buffers.session_buflist)?;
-
   buffers.client_buflists.retain_session_buflist(&session_buflist);
 
-  buffers.client_buflists.entry(kakoune.client.clone()).or_default();
-
-  if !buffers.client_buflists[&kakoune.client].contains(&buffers.bufname) && !buffers::is_hidden(&buffers.bufname) {
-    buffers
-      .client_buflists
-      .get_mut(&kakoune.client)
-      .unwrap()
-      .push(buffers.bufname.clone());
-  }
-
-  let tabs = Tabs::new(
-    &buffers.client_buflists[&kakoune.client],
-    &session_buflist,
-    buffers.bufname,
-  );
+  let mut client_buflist = buffers
+    .client_buflists
+    .buflist(kakoune.client.clone(), &buffers.bufname);
 
   if let Some(action) = action {
     match action {
-      Action::Close => {
-        buffers.client_buflists.remove(&kakoune.client);
+      // ClientCreate is fired after WinDisplay with the incorrect bufname.
+      // So, we clear unfocused buffers to remove the incorrect bufname.
+      // Also, there may have been another client with this name.
+      Action::Create => client_buflist.clear(),
+
+      Action::Only => client_buflist.clear_unfocused(),
+
+      Action::Navigation(navigation) => {
+        let focused = client_buflist.navigate(navigation);
+        if focused != buffers.bufname {
+          println!("evaluate-commands -no-hooks %{{ buffer %§{focused}§ }}");
+        }
       }
-      // Action::First | Action::Next | Action::Prev | Action::Last => tabs.navigate(action),
-      _ => (),
+
+      Action::Drag(drag) => client_buflist.drag(drag),
+
+      Action::Other(_) => (),
     }
   }
 
-  println!("set-option window modelinefmt %§{}§", tabs.render());
+  let tabs = Tabs::new(client_buflist, &session_buflist);
+
+  println!(
+    "set-option window modelinefmt %§{}{}§",
+    modeline.modelinefmt.unwrap_or_default(),
+    tabs.render()
+  );
   println!("set-option global tabs_client_buflists %§{}§", buffers.client_buflists);
 
-  // if bufname isn't in client buflist, add it (special logic for hidden)
-  // if something in session_buflist has only just become modified, broadcast changes
-
-  // let should_broadcast = tabs.modified_or_deleted(tabs_prev);
+  if session_buflist.modified_or_deleted(&session_buflist_prev) {
+    for client in buffers.client_buflists.keys() {
+      println!("try %{{ evaluate-commands -client %§{client}§ 'tabs broadcast' }}");
+    }
+  }
 
   Ok(())
 }

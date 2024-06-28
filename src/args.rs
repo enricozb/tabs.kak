@@ -3,7 +3,7 @@ use std::str::FromStr;
 use anyhow::Result;
 use clap::Parser;
 
-use crate::{buffers::ClientBuflists, tabs::Navigation};
+use crate::buffers::{Drag, ClientBuflists, Navigation};
 
 #[derive(Parser)]
 pub struct Args {
@@ -18,9 +18,12 @@ pub struct Args {
 
   #[command(flatten)]
   pub modeline: Modeline,
+
+  #[clap(long)]
+  pub debug: bool,
 }
 
-#[derive(clap::Args)]
+#[derive(clap::Args, Debug)]
 pub struct Kakoune {
   #[arg(long)]
   pub session: String,
@@ -29,7 +32,7 @@ pub struct Kakoune {
   pub client: String,
 }
 
-#[derive(clap::Args)]
+#[derive(clap::Args, Debug)]
 pub struct Buffers {
   #[arg(long)]
   pub bufname: String,
@@ -37,14 +40,14 @@ pub struct Buffers {
   #[arg(long, num_args = 1..)]
   pub session_buflist: Vec<String>,
 
-  #[arg(long, num_args = 1..)]
+  #[arg(long, num_args = 0..)]
   pub session_buflist_prev: Vec<String>,
 
   #[arg(long, value_parser = clap::value_parser!(ClientBuflists))]
   pub client_buflists: ClientBuflists,
 }
 
-#[derive(clap::Args)]
+#[derive(clap::Args, Debug)]
 pub struct Modeline {
   #[arg(long)]
   pub width: usize,
@@ -53,18 +56,34 @@ pub struct Modeline {
   pub modelinefmt: Option<String>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Debug)]
 pub enum Action {
+  Create,
+  Only,
   Navigation(Navigation),
-  Close,
+  Drag(Drag),
+
+  Other(String),
 }
 
 impl FromStr for Action {
   type Err = anyhow::Error;
   fn from_str(s: &str) -> Result<Self> {
     match s {
-      "close" => Ok(Self::Close),
-      _ => Navigation::from_str(s).map(Self::Navigation),
+      "create" => Ok(Self::Create),
+      "only" => Ok(Self::Only),
+
+      "first" => Ok(Self::Navigation(Navigation::First)),
+      "next" => Ok(Self::Navigation(Navigation::Next)),
+      "prev" => Ok(Self::Navigation(Navigation::Prev)),
+      "last" => Ok(Self::Navigation(Navigation::Last)),
+
+      "drag-first" => Ok(Self::Drag(Drag::First)),
+      "drag-left" => Ok(Self::Drag(Drag::Left)),
+      "drag-right" => Ok(Self::Drag(Drag::Right)),
+      "drag-last" => Ok(Self::Drag(Drag::Last)),
+
+      other => Ok(Self::Other(other.to_string())),
     }
   }
 }

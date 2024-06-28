@@ -5,20 +5,19 @@
 
 # ────────────── options ──────────────
 declare-option -docstring "format string to render alongside tabs" str tabs_modelinefmt
+declare-option -docstring "options to kak-tabs
+--debug: print debugging output
+" str tabs_options
 
 
 # ────────────── hooks ──────────────
-hook -group kak-tabs global ClientCreate .* tabs
-hook -group kak-tabs global ClientClose .* "tabs close"
-# TODO: ClientRename
+# NOTE: WinResize cannot be used as %val{client} is the empty string.
+hook -group kak-tabs global ClientCreate .* "tabs create"
+hook -group kak-tabs global WinDisplay .* "tabs display"
 
-hook -group kak-tabs global WinDisplay .* tabs
-hook -group kak-tabs global WinResize .* tabs
-
-# fired when a buffer may have been modified (if so, all clients should update)
-hook -group kak-tabs global InsertIdle .* tabs
-hook -group kak-tabs global NormalIdle .* tabs
-hook -group kak-tabs global BufReload .* tabs
+hook -group kak-tabs global InsertIdle .* tabs-on-modified
+hook -group kak-tabs global NormalIdle .* tabs-on-modified
+hook -group kak-tabs global BufReload .* tabs-on-modified
 
 
 # ────────────── commands ──────────────
@@ -37,7 +36,8 @@ define-command -override tabs-render -params ..1 %{
       --session-buflist-prev $kak_quoted_opt_tabs_buflist_prev \
       --client-buflists $kak_quoted_opt_tabs_client_buflists \
       --modelinefmt $kak_quoted_opt_tabs_modelinefmt \
-      --width $kak_window_width
+      --width $kak_window_width \
+      $kak_opt_tabs_options
     "
   }
 }
@@ -69,13 +69,24 @@ map global tabs J ": tabs drag-last<ret>" -docstring "⇓ drag last"
 
 # mutate
 map global tabs d ": delete-buffer<ret>" -docstring "delete (focused)"
-map global tabs o ": tabs keep-focused<ret>" -docstring "keep only (focused)"
+map global tabs o ": tabs only<ret>" -docstring "keep only (focused)"
 
 
 # ────────────── state ──────────────
-declare-option -hidden str-list tabs_buflist
+# this fake default value prevents kak-tabs from not receiving a tabs_buflist_pre on session creation.
+declare-option -hidden str-list tabs_buflist "=false"
 declare-option -hidden str-list tabs_buflist_prev
-declare-option -docstring "an opaque representation of client buflists" -hidden str tabs_client_buflists
+declare-option -hidden -docstring "an opaque representation of client buflists" str tabs_client_buflists
+declare-option -hidden -docstring "whether this buffer is modified" bool tabs_modified_buffer false
+
+define-command -override tabs-on-modified %{
+  evaluate-commands %sh{
+    if [ "$kak_opt_tabs_modified_buffer" != "$kak_modified" ]; then
+      printf "set-option buffer tabs_modified_buffer %%val{modified}\n"
+      printf "tabs modified\n"
+    fi
+  }
+}
 
 define-command -override tabs-update-buflist-modified %{
   set-option global tabs_buflist_prev %opt{tabs_buflist}
@@ -90,5 +101,14 @@ define-command -override tabs-update-buflist-modified %{
   }
 }
 
+# ------ testing ------
+
+hook global ClientCreate .* %{
+  set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} {blue}%val{client}{Default}.{green}%val{session}{Default} '
+  tabs-recommended-mapping
+}
+
 set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {{mode_info}} {blue}%val{client}{Default}.{green}%val{session}{Default} '
 tabs-recommended-mapping
+
+map global normal <backspace> ': tabs delete<ret>'

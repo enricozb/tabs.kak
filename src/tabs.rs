@@ -1,43 +1,39 @@
-use std::str::FromStr;
+use crate::buffers::{Buflist, Focused, Modified};
 
-use anyhow::Result;
-
-use crate::buffers::Modified;
-
-pub struct Tabs {
+pub struct Tabs<'a> {
   pub focused: usize,
-  pub buffers: Vec<Buffer>,
+  pub buffers: Vec<Buffer<'a>>,
 }
 
-impl Tabs {
-  pub fn new<'a>(buflist: impl IntoIterator<Item = &'a String>, modified: &Modified, focused_bufname: String) -> Self {
-    let mut focused = None;
+impl<'a> Tabs<'a> {
+  pub fn new(buflist: Buflist<'a>, modified: &Modified) -> Self {
     let mut buffers = Vec::new();
 
-    for (i, buffer) in buflist.into_iter().enumerate() {
-      if buffer == &focused_bufname {
-        focused = Some(i);
-      };
-
+    for buffer in buflist.buflist {
       buffers.push(Buffer {
-        name: buffer.to_string(),
+        name: buffer,
         modified: modified[buffer],
         hidden: false,
       });
     }
 
-    if let Some(focused) = focused {
-      Self { focused, buffers }
-    } else {
-      buffers.push(Buffer {
-        modified: modified[&focused_bufname],
-        name: focused_bufname,
-        hidden: true,
-      });
-
-      Self {
-        focused: buffers.len() - 1,
+    match buflist.focused {
+      Focused::Index(index) => Self {
         buffers,
+        focused: index,
+      },
+
+      Focused::Hidden(bufname) => {
+        buffers.push(Buffer {
+          modified: *modified.get(bufname).unwrap_or(&false),
+          name: bufname,
+          hidden: true,
+        });
+
+        Self {
+          focused: buffers.len() - 1,
+          buffers,
+        }
       }
     }
   }
@@ -64,41 +60,16 @@ impl Tabs {
         string.push_str(" {LineNumbers}");
       }
 
-      string.push_str(&buffer.name);
+      string.push_str(buffer.name);
       string.push_str("{Default} |");
     }
 
     string
   }
-
-  // pub fn navigate(&mut self, navigation: Navigation) -> &str {}
 }
 
-pub struct Buffer {
-  pub name: String,
+pub struct Buffer<'a> {
+  pub name: &'a str,
   pub modified: bool,
   pub hidden: bool,
-}
-
-#[derive(Clone, Copy)]
-pub enum Navigation {
-  First,
-  Next,
-  Prev,
-  Last,
-}
-
-impl FromStr for Navigation {
-  type Err = anyhow::Error;
-
-  fn from_str(s: &str) -> Result<Self> {
-    match s {
-      "first" => Ok(Self::First),
-      "next" => Ok(Self::Next),
-      "prev" => Ok(Self::Prev),
-      "last" => Ok(Self::Last),
-
-      _ => anyhow::bail!("unknown navigation {s:?}"),
-    }
-  }
 }
