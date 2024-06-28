@@ -159,7 +159,7 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "kak-tabs"
-version = "0.1.7"
+version = "0.2.0-beta"
 dependencies = [
  "anyhow",
  "base64",
