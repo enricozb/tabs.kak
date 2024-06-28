@@ -3,7 +3,7 @@ use std::str::FromStr;
 use anyhow::Result;
 use clap::Parser;
 
-use crate::buffers::{Drag, ClientBuflists, Navigation};
+use crate::buffers::{ClientBuflists, Drag, Navigation};
 
 #[derive(Parser)]
 pub struct Args {
@@ -60,6 +60,7 @@ pub struct Modeline {
 pub enum Action {
   Create,
   Only,
+  Delete,
   Navigation(Navigation),
   Drag(Drag),
 
@@ -72,6 +73,7 @@ impl FromStr for Action {
     match s {
       "create" => Ok(Self::Create),
       "only" => Ok(Self::Only),
+      "delete" => Ok(Self::Delete),
 
       "first" => Ok(Self::Navigation(Navigation::First)),
       "next" => Ok(Self::Navigation(Navigation::Next)),

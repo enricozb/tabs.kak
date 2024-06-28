@@ -135,6 +135,21 @@ impl<'a> Buflist<'a> {
       Focused::Hidden(_) => self.buflist.clear(),
     }
   }
+
+  pub fn delete(&mut self) -> Option<&str> {
+    match (self.buflist.len(), &self.focused) {
+      (0, Focused::Hidden(_)) => None,
+      (_, Focused::Hidden(_)) => Some(self.navigate(Navigation::Prev)),
+      (1, Focused::Index(_)) => None,
+      (_, Focused::Index(index)) => {
+        let new_index = std::cmp::min(*index, self.buflist.len() - 2);
+        self.buflist.remove(*index);
+        self.focused = Focused::Index(new_index);
+
+        Some(&self.buflist[new_index])
+      }
+    }
+  }
 }
 
 pub enum Focused<'a> {
@@ -182,5 +197,5 @@ pub enum Drag {
 }
 
 pub fn is_hidden(bufname: &str) -> bool {
-  bufname.starts_with('*') && bufname.ends_with('*')
+  bufname == "*scratch*" || bufname == "*goto*" || bufname == "*debug*"
 }

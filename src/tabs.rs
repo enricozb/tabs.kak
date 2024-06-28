@@ -10,11 +10,7 @@ impl<'a> Tabs<'a> {
     let mut buffers = Vec::new();
 
     for buffer in buflist.buflist {
-      buffers.push(Buffer {
-        name: buffer,
-        modified: modified[buffer],
-        hidden: false,
-      });
+      buffers.push(Buffer::new(buffer, modified[buffer], false));
     }
 
     match buflist.focused {
@@ -24,11 +20,7 @@ impl<'a> Tabs<'a> {
       },
 
       Focused::Hidden(bufname) => {
-        buffers.push(Buffer {
-          modified: *modified.get(bufname).unwrap_or(&false),
-          name: bufname,
-          hidden: true,
-        });
+        buffers.push(Buffer::new(bufname, *modified.get(bufname).unwrap_or(&false), true));
 
         Self {
           focused: buffers.len() - 1,
@@ -54,6 +46,8 @@ impl<'a> Tabs<'a> {
 
       if buffer.hidden {
         string.push_str(" {yellow}");
+      } else if focused && buffer.scratch {
+        string.push_str(" {blue}");
       } else if focused {
         string.push_str(" {Prompt}");
       } else {
@@ -72,4 +66,20 @@ pub struct Buffer<'a> {
   pub name: &'a str,
   pub modified: bool,
   pub hidden: bool,
+  pub scratch: bool,
+}
+
+impl<'a> Buffer<'a> {
+  fn new(name: &'a str, modified: bool, hidden: bool) -> Self {
+    Self {
+      name,
+      modified,
+      hidden,
+      scratch: Self::is_scratch(name),
+    }
+  }
+
+  fn is_scratch(bufname: &str) -> bool {
+    bufname.starts_with('*') && bufname.ends_with('*')
+  }
 }

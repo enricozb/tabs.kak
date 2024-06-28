@@ -77,6 +77,14 @@ fn main() -> Result<()> {
 
       Action::Only => client_buflist.clear_unfocused(),
 
+      Action::Delete => {
+        if let Some(focused) = client_buflist.delete() {
+          println!("evaluate-commands -no-hooks %{{ buffer %§{focused}§ }}");
+        } else {
+          println!("quit");
+        }
+      }
+
       Action::Navigation(navigation) => {
         let focused = client_buflist.navigate(navigation);
         if focused != buffers.bufname {
