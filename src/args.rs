@@ -56,7 +56,7 @@ pub struct Modeline {
   pub modelinefmt: Option<String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
   Create,
   Only,

@@ -165,7 +165,7 @@ impl<'a> Focused<'a> {
   }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Navigation {
   First,
   Next,
@@ -173,7 +173,7 @@ pub enum Navigation {
   Last,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Drag {
   First,
   Left,

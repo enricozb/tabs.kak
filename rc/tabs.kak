@@ -112,3 +112,5 @@ set-option global tabs_modelinefmt '%val{cursor_line}:%val{cursor_char_column} {
 tabs-recommended-mapping
 
 map global normal <backspace> ': tabs delete<ret>'
+
+set-option global tabs_options --debug
