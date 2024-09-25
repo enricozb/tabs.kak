@@ -22,24 +22,24 @@ pub struct Args {
   width: usize,
 
   /// Separator between tabs.
-  #[arg(long, value_name = "FACE")]
-  separator: Option<String>,
+  #[arg(long, value_name = "STR", default_value_t=("|").to_string())]
+  separator: String,
 
   /// Face to use on focused tabs.
-  #[arg(long, value_name = "FACE")]
-  focusedface: Option<String>,
+  #[arg(long, value_name = "FACE", default_value_t=("Prompt").to_string())]
+  focused_face: String,
 
   /// Face to use on inactive tabs.
-  #[arg(long, value_name = "FACE")]
-  inactiveface: Option<String>,
+  #[arg(long, value_name = "FACE", default_value_t=("LineNumbers").to_string())]
+  inactive_face: String,
 
   /// Face to use on separators.
-  #[arg(long, value_name = "FACE")]
-  defaultface: Option<String>,
+  #[arg(long, value_name = "FACE", default_value_t=("Default").to_string())]
+  default_face: String,
 
   /// Face to use on a modified tab indicator.
-  #[arg(long, value_name = "FACE")]
-  modifiedface: Option<String>,
+  #[arg(long, value_name = "FACE", default_value_t=("DiagnosticError").to_string())]
+  modified_face: String,
 
   /// The focused buffer. This must be present in BUFFERS
   #[arg(short, long, value_name = "BUFFER")]
@@ -59,22 +59,7 @@ pub struct Args {
 }
 
 fn main() -> Result<()> {
-  let mut args = Args::parse();
-  if args.separator == None {
-      args.separator = Some(("|").to_string())
-  }
-  if args.focusedface == None {
-      args.focusedface = Some(("Prompt").to_string())
-  }
-  if args.inactiveface == None {
-      args.inactiveface = Some(("LineNumbers").to_string())
-  }
-  if args.defaultface == None {
-      args.defaultface = Some(("Default").to_string())
-  }
-  if args.modifiedface == None {
-      args.modifiedface = Some(("DiagnosticError").to_string())
-  }
+  let args = Args::parse();
   let action = args.action;
 
   let tabs = Tabs::new(args).context("Tabs::new")?;

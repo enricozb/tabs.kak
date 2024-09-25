@@ -19,19 +19,19 @@ pub struct Tabs {
   width: usize,
 
   /// Separator between tabs.
-  separator: Option<String>,
+  separator: String,
 
   /// Face to use on focused tabs.
-  focusedface: Option<String>,
+  focused_face: String,
 
   /// Face to use on inactive tabs.
-  inactiveface: Option<String>,
+  inactive_face: String,
 
   /// Face to use on separators.
-  defaultface: Option<String>,
+  default_face: String,
 
   /// Face to use on a modified tab indicator.
-  modifiedface: Option<String>,
+  modified_face: String,
 
   /// Whether to minify the output tab names.
   minified: bool,
@@ -64,10 +64,10 @@ impl Tabs {
       focused,
       width: args.width,
       separator: args.separator,
-      focusedface: args.focusedface,
-      inactiveface: args.inactiveface,
-      defaultface: args.defaultface,
-      modifiedface: args.modifiedface,
+      focused_face: args.focused_face,
+      inactive_face: args.inactive_face,
+      default_face: args.default_face,
+      modified_face: args.modified_face,
       minified: args.minified,
       modelinefmt: args.modelinefmt,
     })
@@ -107,22 +107,13 @@ impl Tabs {
       .enumerate()
       .map(|(i, buf)| {
         let buffer = if i == self.focused {
-          format!(
-            " {{{}}}{buf}{{{}}} ",
-            self.focusedface.as_deref().unwrap_or_default(),
-            self.defaultface.as_deref().unwrap_or_default())
+          format!( " {{{}}}{buf}{{{}}} ", self.focused_face, self.default_face)
         } else {
-          format!(
-            " {{{}}}{buf}{{{}}} ",
-            self.inactiveface.as_deref().unwrap_or_default(),
-            self.defaultface.as_deref().unwrap_or_default())
+          format!( " {{{}}}{buf}{{{}}} ", self.inactive_face, self.default_face)
         };
 
         let modified = if self.modified.contains(&i) {
-          format!(
-            " {{{}}}*{{{}}}",
-            self.modifiedface.as_deref().unwrap_or_default(),
-            self.defaultface.as_deref().unwrap_or_default())
+          format!( " {{{}}}*{{{}}}", self.modified_face, self.default_face)
         } else {
           String::new()
         };
@@ -134,7 +125,7 @@ impl Tabs {
     format!(
       "{}|{}|",
       self.modelinefmt.as_deref().unwrap_or_default(),
-      formatted.join(self.separator.as_deref().unwrap_or_default())
+      formatted.join(self.separator.as_ref())
     )
   }
 
