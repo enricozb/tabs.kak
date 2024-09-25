@@ -18,6 +18,21 @@ pub struct Tabs {
   /// The width of the terminal.
   width: usize,
 
+  /// Separator between tabs.
+  separator: Option<String>,
+
+  /// Face to use on focused tabs.
+  focusedface: Option<String>,
+
+  /// Face to use on inactive tabs.
+  inactiveface: Option<String>,
+
+  /// Face to use on separators.
+  defaultface: Option<String>,
+
+  /// Face to use on a modified tab indicator.
+  modifiedface: Option<String>,
+
   /// Whether to minify the output tab names.
   minified: bool,
 
@@ -48,6 +63,11 @@ impl Tabs {
       modified,
       focused,
       width: args.width,
+      separator: args.separator,
+      focusedface: args.focusedface,
+      inactiveface: args.inactiveface,
+      defaultface: args.defaultface,
+      modifiedface: args.modifiedface,
       minified: args.minified,
       modelinefmt: args.modelinefmt,
     })
@@ -87,13 +107,22 @@ impl Tabs {
       .enumerate()
       .map(|(i, buf)| {
         let buffer = if i == self.focused {
-          format!(" {{Prompt}}{buf}{{Default}} ")
+          format!(
+            " {{{}}}{buf}{{{}}} ",
+            self.focusedface.as_deref().unwrap_or_default(),
+            self.defaultface.as_deref().unwrap_or_default())
         } else {
-          format!(" {{LineNumbers}}{buf}{{Default}} ")
+          format!(
+            " {{{}}}{buf}{{{}}} ",
+            self.inactiveface.as_deref().unwrap_or_default(),
+            self.defaultface.as_deref().unwrap_or_default())
         };
 
         let modified = if self.modified.contains(&i) {
-          " {DiagnosticError}*{Default}".to_string()
+          format!(
+            " {{{}}}*{{{}}}",
+            self.modifiedface.as_deref().unwrap_or_default(),
+            self.defaultface.as_deref().unwrap_or_default())
         } else {
           String::new()
         };
@@ -105,7 +134,7 @@ impl Tabs {
     format!(
       "{}|{}|",
       self.modelinefmt.as_deref().unwrap_or_default(),
-      formatted.join("|")
+      formatted.join(self.separator.as_deref().unwrap_or_default())
     )
   }
 
