@@ -18,6 +18,21 @@ pub struct Tabs {
   /// The width of the terminal.
   width: usize,
 
+  /// Separator between tabs.
+  separator: String,
+
+  /// Face to use on focused tabs.
+  focused_face: String,
+
+  /// Face to use on inactive tabs.
+  inactive_face: String,
+
+  /// Face to use on separators.
+  default_face: String,
+
+  /// Face to use on a modified tab indicator.
+  modified_face: String,
+
   /// Whether to minify the output tab names.
   minified: bool,
 
@@ -48,6 +63,11 @@ impl Tabs {
       modified,
       focused,
       width: args.width,
+      separator: args.separator,
+      focused_face: args.focused_face,
+      inactive_face: args.inactive_face,
+      default_face: args.default_face,
+      modified_face: args.modified_face,
       minified: args.minified,
       modelinefmt: args.modelinefmt,
     })
@@ -87,13 +107,13 @@ impl Tabs {
       .enumerate()
       .map(|(i, buf)| {
         let buffer = if i == self.focused {
-          format!(" {{Prompt}}{buf}{{Default}} ")
+          format!( " {{{}}}{buf}{{{}}} ", self.focused_face, self.default_face)
         } else {
-          format!(" {{LineNumbers}}{buf}{{Default}} ")
+          format!( " {{{}}}{buf}{{{}}} ", self.inactive_face, self.default_face)
         };
 
         let modified = if self.modified.contains(&i) {
-          " {DiagnosticError}*{Default}".to_string()
+          format!( " {{{}}}*{{{}}}", self.modified_face, self.default_face)
         } else {
           String::new()
         };
@@ -105,7 +125,7 @@ impl Tabs {
     format!(
       "{}|{}|",
       self.modelinefmt.as_deref().unwrap_or_default(),
-      formatted.join("|")
+      formatted.join(&self.separator)
     )
   }
 
