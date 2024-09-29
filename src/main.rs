@@ -22,23 +22,23 @@ pub struct Args {
   width: usize,
 
   /// Separator between tabs.
-  #[arg(long, value_name = "STR", default_value_t=("|").to_string())]
+  #[arg(long, value_name = "STR", default_value="|")]
   separator: String,
 
   /// Face to use on focused tabs.
-  #[arg(long, value_name = "FACE", default_value_t=("Prompt").to_string())]
+  #[arg(long, value_name = "FACE", default_value="Prompt")]
   focused_face: String,
 
   /// Face to use on inactive tabs.
-  #[arg(long, value_name = "FACE", default_value_t=("LineNumbers").to_string())]
+  #[arg(long, value_name = "FACE", default_value="LineNumbers")]
   inactive_face: String,
 
   /// Face to use on separators.
-  #[arg(long, value_name = "FACE", default_value_t=("Default").to_string())]
+  #[arg(long, value_name = "FACE", default_value="Default")]
   default_face: String,
 
   /// Face to use on a modified tab indicator.
-  #[arg(long, value_name = "FACE", default_value_t=("DiagnosticError").to_string())]
+  #[arg(long, value_name = "FACE", default_value="DiagnosticError")]
   modified_face: String,
 
   /// The focused buffer. This must be present in BUFFERS
