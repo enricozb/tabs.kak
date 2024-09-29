@@ -125,7 +125,7 @@ impl Tabs {
     format!(
       "{}|{}|",
       self.modelinefmt.as_deref().unwrap_or_default(),
-      formatted.join(self.separator.as_ref())
+      formatted.join(&self.separator)
     )
   }
 
