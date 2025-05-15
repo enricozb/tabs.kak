@@ -56,8 +56,8 @@ define-command -override tabs-render -params ..1 %{
 define-command -override tabs-minimal %{
   evaluate-commands %sh{
     case "$kak_opt_tabs_options" in
-      *--minimal*) printf "set-option -remove global tabs_options --minimal" ;;
-      *) printf "set-option -remove global tabs_options --minimal" ;;
+      *--minimal*) echo "set-option -remove global tabs_options --minimal" ;;
+      *) echo "set-option -add global tabs_options --minimal" ;;
     esac
   }
 
