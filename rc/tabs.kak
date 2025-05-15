@@ -39,7 +39,7 @@ define-command -override tabs -params ..1 %{
 
 define-command -override tabs-render -params ..1 %{
   evaluate-commands %sh{
-    eval "./target/release/kak-tabs $1 \
+    eval "kak-tabs $1 \
       --session $kak_quoted_session \
       --client $kak_quoted_client \
       --bufname $kak_quoted_bufname \
