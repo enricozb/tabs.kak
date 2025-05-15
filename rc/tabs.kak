@@ -6,8 +6,9 @@
 # ────────────── options ──────────────
 declare-option -docstring "format string to render alongside tabs" str tabs_modelinefmt
 declare-option -docstring "options to kak-tabs
+--minimal: show minimal information in tab titles
 --debug: print debugging output
-" str tabs_options
+" str-list tabs_options
 
 
 # ────────────── hooks ──────────────
@@ -38,7 +39,7 @@ define-command -override tabs -params ..1 %{
 
 define-command -override tabs-render -params ..1 %{
   evaluate-commands %sh{
-    eval "kak-tabs $1 \
+    eval "./target/release/kak-tabs $1 \
       --session $kak_quoted_session \
       --client $kak_quoted_client \
       --bufname $kak_quoted_bufname \
@@ -50,6 +51,17 @@ define-command -override tabs-render -params ..1 %{
       $kak_opt_tabs_options
     "
   }
+}
+
+define-command -override tabs-minimal %{
+  evaluate-commands %sh{
+    case "$kak_opt_tabs_options" in
+      *--minimal*) printf "set-option -remove global tabs_options --minimal" ;;
+      *) printf "set-option -remove global tabs_options --minimal" ;;
+    esac
+  }
+
+  tabs
 }
 
 define-command tabs-recommended-mapping %{
@@ -81,6 +93,9 @@ map global tabs J ": tabs drag-last<ret>" -docstring "⇓ drag last"
 # mutate
 map global tabs d ": delete-buffer<ret>" -docstring "delete (focused)"
 map global tabs o ": tabs only<ret>" -docstring "keep only (focused)"
+
+# options
+map global tabs m ": tabs-minimal<ret>" -docstring "toggle minimal"
 
 
 # ────────────── state ──────────────

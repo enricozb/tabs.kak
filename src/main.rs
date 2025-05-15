@@ -87,6 +87,7 @@ fn main() -> Result<()> {
     kakoune,
     buffers,
     modeline,
+    minimal,
     debug,
   } = Args::parse();
 
@@ -107,7 +108,7 @@ fn main() -> Result<()> {
     handle_action(&action, &mut client_buflist, &bufname);
   }
 
-  let tabs = Tabs::new(client_buflist, &session_buflist).render();
+  let tabs = Tabs::new(client_buflist, &session_buflist, minimal).render();
   let modeline = modeline.modelinefmt.unwrap_or_default();
   let should_broadcast = session_buflist.modified_or_deleted(&session_buflist_prev);
 

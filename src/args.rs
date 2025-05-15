@@ -19,6 +19,9 @@ pub struct Args {
   #[command(flatten)]
   pub modeline: Modeline,
 
+  #[arg(long, default_value_t)]
+  pub minimal: bool,
+
   #[clap(long)]
   pub debug: bool,
 }
